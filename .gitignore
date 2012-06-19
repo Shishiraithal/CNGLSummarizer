@@ -1,0 +1,5 @@
+.metadata/
+summarizer/.settings/
+summarizer/target/
+summarizer/.classpath
+summarizer/.project

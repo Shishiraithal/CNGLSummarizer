@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<config>
+	<stopwords>src/main/resources/stopwords.txt</stopwords>
+	<cuephrases>src/main/resources/test_cue_phrases.txt</cuephrases>
+</config>
