@@ -3,13 +3,14 @@ package ie.dcu.cngl.summarizer;
 import ie.dcu.cngl.tokeniser.SectionInfo;
 import ie.dcu.cngl.tokeniser.TokenInfo;
 
+import java.io.IOException;
 import java.util.Vector;
 
 public class TitleTermFeature extends Feature {
 
 	private Vector<TokenInfo> titleTokens;
 
-	public TitleTermFeature(Vector<TokenInfo> titleTokens, Vector<TokenInfo> tokens, Vector<SectionInfo> sentences, Vector<SectionInfo> paragraphs) {
+	public TitleTermFeature(Vector<TokenInfo> titleTokens, Vector<TokenInfo> tokens, Vector<SectionInfo> sentences, Vector<SectionInfo> paragraphs) throws IOException {
 		super(tokens, sentences, paragraphs);
 		this.titleTokens = titleTokens;
 	}

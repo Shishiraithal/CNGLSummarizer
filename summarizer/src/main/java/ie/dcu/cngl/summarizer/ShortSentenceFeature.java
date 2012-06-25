@@ -4,6 +4,7 @@ import ie.dcu.cngl.tokeniser.SectionInfo;
 import ie.dcu.cngl.tokeniser.TokenInfo;
 import ie.dcu.cngl.tokeniser.Tokenizer;
 
+import java.io.IOException;
 import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
@@ -18,9 +19,9 @@ public class ShortSentenceFeature extends Feature {
 	private Tokenizer tokenizer;
 	private int minimumSentenceTerms;
 
-	public ShortSentenceFeature(Vector<TokenInfo> tokens, Vector<SectionInfo> sentences, Vector<SectionInfo> paragraphs) {
+	public ShortSentenceFeature(Vector<TokenInfo> tokens, Vector<SectionInfo> sentences, Vector<SectionInfo> paragraphs) throws IOException {
 		super(tokens, sentences, paragraphs);
-		this.tokenizer = new Tokenizer();
+		this.tokenizer = Tokenizer.getInstance();
 		this.minimumSentenceTerms = 5;
 	}
 	

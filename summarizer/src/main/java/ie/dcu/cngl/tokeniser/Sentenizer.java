@@ -6,10 +6,13 @@ import java.util.*;
 import org.apache.commons.lang.StringUtils;
 
 public class Sentenizer implements ISentenizer {
+	
+	private static Sentenizer instance;
+	
     private HashSet<String> bss, pse, bse;
     private Tokenizer tokenizer = null;
     
-    public Sentenizer(Tokenizer tokenizer) {
+    private Sentenizer(Tokenizer tokenizer) {
 		this.tokenizer = tokenizer;
 		String line;
 		bss = new HashSet<String>();
@@ -70,6 +73,14 @@ public class Sentenizer implements ISentenizer {
 	        System.out.println("ERROR: " + e);
 	    }
     }
+    
+    public static Sentenizer getInstance() {
+    	if(instance == null) {
+    		Tokenizer tokenizer = Tokenizer.getInstance();
+    		instance = new Sentenizer(tokenizer);
+    	}
+    	return instance;
+    }
 
     public boolean isBadSentenceStart(String s) {
     	return bss.contains(s);
@@ -96,11 +107,12 @@ public class Sentenizer implements ISentenizer {
 		TokenInfo currentTokInfo = null;
 		TokenInfo nextTokInfo = null;
 		String previousToken = StringUtils.EMPTY, currentToken = StringUtils.EMPTY, nextToken = StringUtils.EMPTY;
-	    while (tok_pos < tok_len) {
+	    boolean inQuotes = false, isSentence = false;
+		while (tok_pos < tok_len) {
 	    	//Update all token info
 		    prevTokInfo = currentTokInfo;
 		    currentTokInfo = nextTokInfo;
-		    nextTokInfo = (TokenInfo)tok_vec.elementAt(tok_pos);
+		    nextTokInfo = tok_vec.elementAt(tok_pos);
 		    
 		    //Update token str values
 	        previousToken = currentToken;
@@ -110,19 +122,30 @@ public class Sentenizer implements ISentenizer {
 		    if (currentTokInfo != null)
 				sentence.add(currentTokInfo);
 
-		    if (currentTokInfo != null && !isPossibleSentenceEnd(currentToken)) {
-		    	; // do not break if end token is not recognized
-		    } else if (prevTokInfo != null && isBadSentenceEnd(previousToken)) {
-		    	; // do not break if last token would be bad sentence end
-		    } else if (nextTokInfo != null && isBadSentenceStart(nextToken)) {
-		    	; // do not break if next token is bad sentence start
-		    } else if (currentTokInfo != null && nextTokInfo != null && (currentTokInfo.getStart() + currentTokInfo.getLength() > nextTokInfo.getStart()-1)) {
-		    	; // only break after whitespace
-		    } else if (currentTokInfo != null && Character.isLowerCase(nextToken.charAt(0))) {
-		    	; // don't break before lower cased next token
-		    } else if (sentence.size() > 0 && currentToken!=null) {
-				sentences.add(sentence);
-				sentence = new Vector<TokenInfo>();
+		    if(currentTokInfo != null && currentTokInfo.getLineNum() < nextTokInfo.getLineNum() && nextTokInfo.getStart()-(currentTokInfo.getStart()+currentTokInfo.getLength()) > 1) {
+		    	isSentence = true;		//New line
+			} else if(currentToken.equals("\"")) {
+		    	inQuotes = !inQuotes;	//Switches between true and false
+		    	isSentence = false; 
+	    	} else if(currentTokInfo != null && !isPossibleSentenceEnd(currentToken)) {
+		    	isSentence = false; 	// do not break if end token is not recognized
+		    } else if(prevTokInfo != null && isBadSentenceEnd(previousToken)) {
+		    	isSentence = false; 	// do not break if last token would be bad sentence end
+		    } else if(nextTokInfo != null && isBadSentenceStart(nextToken)) {
+		    	isSentence = false; 	// do not break if next token is bad sentence start
+		    } else if(currentTokInfo != null && nextTokInfo != null && (currentTokInfo.getStart() + currentTokInfo.getLength() > nextTokInfo.getStart()-1)) {
+		    	isSentence = false; 	// only break after whitespace
+		    } else if(currentTokInfo != null && Character.isLowerCase(nextToken.charAt(0))) {
+		    	isSentence = false; 	// don't break before lower cased next token
+		    } else {
+		    	isSentence = true;
+		    }
+		    
+		    if(sentence.size() > 0 && currentToken != null && isSentence) { 
+		    	if(!inQuotes) {
+					sentences.add(sentence);
+					sentence = new Vector<TokenInfo>();
+		    	}
 		    }
 		    tok_pos++;
 		}

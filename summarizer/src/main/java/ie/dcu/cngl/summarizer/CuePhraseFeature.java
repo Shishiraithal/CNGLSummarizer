@@ -17,7 +17,7 @@ public class CuePhraseFeature extends Feature {
 	
 	private ArrayList<SentenceScore> cuePhrases;
 
-	public CuePhraseFeature(Vector<TokenInfo> tokens, Vector<SectionInfo> sentences, Vector<SectionInfo> paragraphs) {
+	public CuePhraseFeature(Vector<TokenInfo> tokens, Vector<SectionInfo> sentences, Vector<SectionInfo> paragraphs) throws IOException {
 		super(tokens, sentences, paragraphs);
 		cuePhrases = new ArrayList<SentenceScore>();
 		try {

@@ -14,6 +14,8 @@ import org.apache.commons.lang.StringUtils;
 // SGML escpae/unescpae
 
 public class Tokenizer implements ITokenizer {
+	
+	private static Tokenizer instance;
 
     private char[] mChars;
     private int mLastPosition;
@@ -27,12 +29,18 @@ public class Tokenizer implements ITokenizer {
     private int mLastTokenStartPosition = -1;
     private int mLastTokenEndPosition = -1;
 
-//    private String abbreviationsFile = "DATA/ENabbreviations.txt";
     private static HashMap<String, Vector<Vector<String>>> abbrevs;
 
-    public Tokenizer() {
+    private Tokenizer() {
 		abbrevs = new HashMap<String, Vector<Vector<String>>>();
 		loadAbbreviations(TokenizerUtils.abbreviations);
+    }
+    
+    public static Tokenizer getInstance() {
+    	if(instance == null) {
+    		instance = new Tokenizer();
+    	}
+    	return instance;
     }
 
     public void loadAbbreviations(String filename) {

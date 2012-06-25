@@ -2,16 +2,24 @@ package ie.dcu.cngl.summarizer;
 
 import ie.dcu.cngl.tokeniser.SectionInfo;
 import ie.dcu.cngl.tokeniser.TokenInfo;
+import ie.dcu.cngl.tokeniser.TokenizerUtils;
 
+import java.io.IOException;
+import java.io.StringReader;
 import java.util.Vector;
+
+import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.TokenStream;
 
 public abstract class Feature {
 	
+	protected Analyzer analyzer;
 	protected Vector<TokenInfo> tokens;
 	protected Vector<SectionInfo> sentences; 
 	protected Vector<SectionInfo> paragraphs;
 	
-	public Feature(Vector<TokenInfo> tokens, Vector<SectionInfo> sentences, Vector<SectionInfo> paragraphs) {
+	public Feature(Vector<TokenInfo> tokens, Vector<SectionInfo> sentences, Vector<SectionInfo> paragraphs) throws IOException {
+		this.analyzer = new SummaryAnalyzer();
 		this.setTokens(tokens);
 		this.setSentences(sentences);
 		this.setParagraphs(paragraphs);
@@ -30,6 +38,23 @@ public abstract class Feature {
 			}
 		}
 		return result;
+	}
+	
+	protected double numberOfTerms(Vector<TokenInfo> sentence) {
+		double numTerms = 0;
+
+		Vector<Vector<TokenInfo>> sentenceHolder = new Vector<Vector<TokenInfo>>();
+		sentenceHolder.add(sentence);
+		StringReader reader = new StringReader(TokenizerUtils.recombineTokens(sentenceHolder).get(0));
+		TokenStream tokenStream = analyzer.tokenStream(null, reader);
+
+		try {
+			while (tokenStream.incrementToken()) {
+				numTerms++;
+			}
+		} catch (IOException e) {}
+		
+		return numTerms;
 	}
 	
 	protected void normalise(Double[] weights) {

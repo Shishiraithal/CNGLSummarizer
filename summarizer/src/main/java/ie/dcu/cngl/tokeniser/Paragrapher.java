@@ -6,9 +6,11 @@ import org.apache.commons.lang.StringUtils;
 
 
 public class Paragrapher {
+	
+	private static Paragrapher instance;
     private Tokenizer tokenizer;
     
-    public Paragrapher(Tokenizer tokenizer) {
+    private Paragrapher(Tokenizer tokenizer) {
 		this.tokenizer = tokenizer;
     }
 
@@ -41,7 +43,7 @@ public class Paragrapher {
 		    if (currentTokInfo != null && nextTokInfo != null && (currentTokInfo.getStart() + currentTokInfo.getLength() > nextTokInfo.getStart()-1)) {
 		    	; // only break after whitespace
 		    } else if (sentence.size() > 0 && currentToken != null
-		    		&& (currentTokInfo.getLineNum() < nextTokInfo.getLineNum() 
+		    		&& (currentTokInfo.getLineNum() < nextTokInfo.getLineNum() 	//New line
 		    				&& nextTokInfo.getStart()-(currentTokInfo.getStart()+currentTokInfo.getLength()) > 1)) {
 				sentences.add(sentence);
 				sentence = new Vector<TokenInfo>();
@@ -68,6 +70,14 @@ public class Paragrapher {
 //		return strSentences;
 	    
 	    return sentences;
+    }
+    
+    public static Paragrapher getInstance() {
+    	if(instance == null) {
+    		Tokenizer tokenizer = Tokenizer.getInstance();
+    		instance = new Paragrapher(tokenizer);
+    	}
+    	return instance;
     }
     
     public Vector<SectionInfo> paragraph(String text) {

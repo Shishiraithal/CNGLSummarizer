@@ -32,14 +32,14 @@ public class SummaryAnalyzer extends Analyzer {
 
 	private Set<Object> stopset;
 
-	public SummaryAnalyzer() throws IOException {
 		String[] stopwords = filterComments(StringUtils.split(FileUtils.readFileToString(new File(SummarizationUtils.stopwords), "UTF-8")));
+		public SummaryAnalyzer() throws IOException {
 		this.stopset = StopFilter.makeStopSet(Version.LUCENE_36, stopwords, true);
 	}
 
 	@Override
 	public TokenStream tokenStream(String fieldName, Reader reader) {
-		Tokenizer tokenizer = new Tokenizer();
+		Tokenizer tokenizer = Tokenizer.getInstance();
 		String text = getText(reader);
 		Vector<TokenInfo> tokens = tokenizer.tokenize(text);
 		Iterator<TokenInfo> iter = tokens.iterator();

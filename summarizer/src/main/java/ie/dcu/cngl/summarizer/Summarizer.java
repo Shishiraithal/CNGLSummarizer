@@ -17,11 +17,12 @@ public class Summarizer {
 	private Paragrapher paragrapher;
 	
 	private int numSentences;
+	private String query;
 	
 	public Summarizer() {
-		tokenizer = new Tokenizer();
-		sentinzer = new Sentenizer(tokenizer);
-		paragrapher = new Paragrapher(tokenizer);
+		tokenizer = Tokenizer.getInstance();
+		sentinzer = Sentenizer.getInstance();
+		paragrapher = Paragrapher.getInstance();
 		this.numSentences = 2;	//Default number of sentences
 	}
 	
@@ -30,11 +31,15 @@ public class Summarizer {
 	}
 	
 	public String summarize(String title, String content) {
-		Vector<TokenInfo> titleTokens = tokenizer.tokenize(title);
+		Vector<TokenInfo> titleTokens = title == null ? null : tokenizer.tokenize(title);
 		Vector<TokenInfo> tokens = tokenizer.tokenize(content);
 		Vector<SectionInfo> sentences = sentinzer.sentenize(content);
 		Vector<SectionInfo> paragraphs = paragrapher.paragraph(content);
-		Weighter weighter = new Weighter(titleTokens, tokens, sentences, paragraphs);
+		Weighter weighter = new Weighter(tokens, sentences, paragraphs);
+		weighter.setTitle(titleTokens);
+		if(query != null) {
+			weighter.setQuery(tokenizer.tokenize(query));
+		}
 		Aggregator aggregator = new Aggregator(sentences);
 		
 		Vector<Double[]> weights = weighter.calculateWeights();
@@ -43,10 +48,14 @@ public class Summarizer {
 		String summary = StringUtils.EMPTY;
 		for(int i = 0; i < scores.length; i++) {
 			if(scores[i].getScore() < numSentences)
-				summary+=(scores[i].getSentence() + " ... ");
+				summary+=(scores[i].getSentence() + "\n");
 		}
 		
 		return summary;
+	}
+
+	public void setQuery(String query) {
+		this.query = query;
 	}
 	
 }
