@@ -31,15 +31,18 @@ public class Summarizer {
 	}
 	
 	public String summarize(String title, String content) {
-		Vector<TokenInfo> titleTokens = title == null ? null : tokenizer.tokenize(title);
+		if(StringUtils.isEmpty(content)) {
+			return StringUtils.EMPTY;
+		}
+		
 		Vector<TokenInfo> tokens = tokenizer.tokenize(content);
 		Vector<SectionInfo> sentences = sentinzer.sentenize(content);
 		Vector<SectionInfo> paragraphs = paragrapher.paragraph(content);
+		
 		Weighter weighter = new Weighter(tokens, sentences, paragraphs);
-		weighter.setTitle(titleTokens);
-		if(query != null) {
-			weighter.setQuery(tokenizer.tokenize(query));
-		}
+		weighter.setTitle(StringUtils.isNotEmpty(title) ? tokenizer.tokenize(title) : null);
+		weighter.setQuery(StringUtils.isNotEmpty(query) ? tokenizer.tokenize(query) : null);
+		
 		Aggregator aggregator = new Aggregator(sentences);
 		
 		Vector<Double[]> weights = weighter.calculateWeights();

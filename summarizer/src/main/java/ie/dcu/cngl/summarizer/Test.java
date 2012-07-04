@@ -8,7 +8,7 @@ import org.apache.commons.io.FileUtils;
 public class Test {
 	public static void main(String [] args) throws Exception {
 		String text = FileUtils.readFileToString(
-									new File("C:\\Users\\Shane\\Downloads\\summaries\\JAIRtxt\\agre97a.txt"), "UTF-8");
+									new File("C:\\Users\\Shane\\Desktop\\long.txt"), "UTF-8");
 		Summarizer summarizer = new Summarizer();
 		summarizer.setNumSentences(3);
 		String summary = summarizer.summarize(null, text);

@@ -76,8 +76,10 @@ public class Sentenizer implements ISentenizer {
     
     public static Sentenizer getInstance() {
     	if(instance == null) {
-    		Tokenizer tokenizer = Tokenizer.getInstance();
-    		instance = new Sentenizer(tokenizer);
+    		synchronized(Sentenizer.class) {
+	    		Tokenizer tokenizer = Tokenizer.getInstance();
+	    		instance = new Sentenizer(tokenizer);
+    		}
     	}
     	return instance;
     }
@@ -94,7 +96,7 @@ public class Sentenizer implements ISentenizer {
     	return bse.contains(s);
     }
 
-    public Vector<Vector<TokenInfo>> sentenizeTokens(String s) {
+    public synchronized Vector<Vector<TokenInfo>> sentenizeTokens(String s) {
 		Vector<TokenInfo> tok_vec = tokenizer.tokenize(s);
 		if (tok_vec == null)
 		    return null;
@@ -124,8 +126,11 @@ public class Sentenizer implements ISentenizer {
 
 		    if(currentTokInfo != null && currentTokInfo.getLineNum() < nextTokInfo.getLineNum() && nextTokInfo.getStart()-(currentTokInfo.getStart()+currentTokInfo.getLength()) > 1) {
 		    	isSentence = true;		//New line
-			} else if(currentToken.equals("\"")) {
-		    	inQuotes = !inQuotes;	//Switches between true and false
+			} else if(currentToken.equals("\"")) {	//Opening quotes
+				//Starting quotes must follow a space. ([he said "hi there"] is allowed, [5'6"] is not) 
+				if(inQuotes || prevTokInfo == null || (currentTokInfo != null && currentTokInfo.getStart() - (prevTokInfo.getStart() + prevTokInfo.getLength()) > 1)) {
+					inQuotes = !inQuotes;	//Switches between true and false
+				}
 		    	isSentence = false; 
 	    	} else if(currentTokInfo != null && !isPossibleSentenceEnd(currentToken)) {
 		    	isSentence = false; 	// do not break if end token is not recognized
@@ -158,7 +163,7 @@ public class Sentenizer implements ISentenizer {
 	    return sentences;
     }
     
-    public Vector<SectionInfo> sentenize(String text) {
+    public synchronized Vector<SectionInfo> sentenize(String text) {
     	Vector<SectionInfo> sentences = new Vector<SectionInfo>();
     	
     	Vector<String> strSentences = TokenizerUtils.recombineTokens(sentenizeTokens(text));

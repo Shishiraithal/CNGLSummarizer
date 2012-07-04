@@ -38,8 +38,10 @@ public class Tokenizer implements ITokenizer {
     
     public static Tokenizer getInstance() {
     	if(instance == null) {
-    		instance = new Tokenizer();
-    	}
+    		synchronized(Tokenizer.class) {
+    			instance = new Tokenizer();
+    		}
+		}
     	return instance;
     }
 
@@ -48,7 +50,6 @@ public class Tokenizer implements ITokenizer {
             File file = new File(filename);
             BufferedReader reader = new BufferedReader(new FileReader(file));
             String line = StringUtils.EMPTY;
-            int cnt = 0;
             while((line = reader.readLine()) != null) {
                 if (line == null || line.equals(StringUtils.EMPTY) || line.startsWith(TokenizerUtils.COMMENT)) {
                     ; // ignore comment
@@ -60,21 +61,20 @@ public class Tokenizer implements ITokenizer {
 				    }
 				    Vector<String> repl = new Vector<String>();
 				    Vector<TokenInfo> term_elts = tokenize(line, false);
-				    TokenInfo t0 = (TokenInfo)term_elts.elementAt(0);
-				    String term_one = t0.getValue();
+				    TokenInfo term0 = term_elts.get(0);
+				    String term_one = term0.getValue();
 				    repl.add(line);
 				    for (int i = 1; i < term_elts.size(); i++) {
-						TokenInfo ti = (TokenInfo)term_elts.elementAt(i);
-						String oelt = ti.getValue();
+						TokenInfo termI = term_elts.get(i);
+						String oelt = termI.getValue();
 						repl.add(oelt);
 				    }
-				    Vector<Vector<String>> entry = (Vector<Vector<String>>)abbrevs.get(term_one);
+				    Vector<Vector<String>> entry = abbrevs.get(term_one);
 				    if (entry == null) {
 				    	entry = new Vector<Vector<String>>();
 				    }
 				    entry.add(repl);
 				    abbrevs.put(term_one, entry);
-				    cnt++;
                 }
             }
             
@@ -197,7 +197,7 @@ public class Tokenizer implements ITokenizer {
         return curToken();
     }
 
-    public Vector<TokenInfo> tokenize(String s, boolean postprocess) {
+    public synchronized Vector<TokenInfo> tokenize(String s, boolean postprocess) {
         mChars = s.toCharArray();
         mPosition = 0;
         mLastPosition = s.length();
@@ -214,8 +214,8 @@ public class Tokenizer implements ITokenizer {
 	        tokens.add(ti);
         }
 		if (postprocess) {
-		    tokens=postTokenize(tokens);
-		    tokens=deHyphenate(tokens, s);
+		    tokens = postTokenize(tokens);
+		    tokens = deHyphenate(tokens, s);
 		}
         return tokens;
     }
@@ -277,13 +277,12 @@ public class Tokenizer implements ITokenizer {
 				for (int k = 1; k < nskip && tok_pos+1 < tok_cnt; k++) {
 				    // remove next token
 				    TokenInfo kti = tok_vec.elementAt(tok_pos+1);
-				    // assume no whitespace between constituent tokens
-				    ls+=kti.getValue();
+				    ls = combineTokens(ls, kti.getValue());
 				    tok_vec.removeElementAt(tok_pos+1);
 				    tok_cnt--;
 				}
 				// modify current token
-				ti.setValue(ti.getValue() + ls);
+				ti.setValue(combineTokens(ti.getValue(), ls));
 				ti.setLength(lti_end - ti.getStart());
 				tok_pos++; // advance only one token
 		    } else {
@@ -294,6 +293,12 @@ public class Tokenizer implements ITokenizer {
 		return tok_vec;
     }
 
+    private static String combineTokens(String tok1, String tok2) {
+	    // add white space if current string ends with letter and the next starts with one
+    	boolean whiteSpace = tok1.length() > 0 && tok2.length() > 0 && Character.isLetter(tok1.charAt(tok1.length()-1)) && Character.isLetter(tok2.charAt(0));
+    	return whiteSpace ? tok1 + " " + tok2 : tok1 + tok2;
+    }
+    
     // match token list and phrase pattern
     public static int MWEmatch(Vector<TokenInfo> tok_vec, int tok_pos, Vector<String> pat, int pat_pos, int mcount) {
         if (pat_pos >= pat.size()) { // reached end of pattern

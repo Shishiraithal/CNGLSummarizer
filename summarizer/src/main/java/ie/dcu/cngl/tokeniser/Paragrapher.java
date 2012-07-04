@@ -14,7 +14,17 @@ public class Paragrapher {
 		this.tokenizer = tokenizer;
     }
 
-    public Vector<Vector<TokenInfo>> paragraphTokens(String s) {
+    public static Paragrapher getInstance() {
+    	if(instance == null) {
+    		synchronized(Paragrapher.class) {
+	    		Tokenizer tokenizer = Tokenizer.getInstance();
+	    		instance = new Paragrapher(tokenizer);
+    		}
+    	}
+    	return instance;
+    }
+
+    public synchronized Vector<Vector<TokenInfo>> paragraphTokens(String s) {
 		Vector<TokenInfo> tok_vec = tokenizer.tokenize(s);
 		if (tok_vec == null)
 		    return null;
@@ -72,15 +82,7 @@ public class Paragrapher {
 	    return sentences;
     }
     
-    public static Paragrapher getInstance() {
-    	if(instance == null) {
-    		Tokenizer tokenizer = Tokenizer.getInstance();
-    		instance = new Paragrapher(tokenizer);
-    	}
-    	return instance;
-    }
-    
-    public Vector<SectionInfo> paragraph(String text) {
+    public synchronized Vector<SectionInfo> paragraph(String text) {
     	Vector<SectionInfo> paragraphs = new Vector<SectionInfo>();
     	
     	Vector<String> strParagraphs = TokenizerUtils.recombineTokens(paragraphTokens(text));
