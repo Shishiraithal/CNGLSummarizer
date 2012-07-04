@@ -1,8 +1,8 @@
 package ie.dcu.cngl.summarizer;
 
-import ie.dcu.cngl.tokeniser.SectionInfo;
-import ie.dcu.cngl.tokeniser.TokenInfo;
-import ie.dcu.cngl.tokeniser.Tokenizer;
+import ie.dcu.cngl.tokenizer.SectionInfo;
+import ie.dcu.cngl.tokenizer.TokenInfo;
+import ie.dcu.cngl.tokenizer.Tokenizer;
 
 import java.io.IOException;
 import java.util.Vector;

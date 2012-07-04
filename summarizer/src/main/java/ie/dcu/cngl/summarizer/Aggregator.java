@@ -1,6 +1,7 @@
 package ie.dcu.cngl.summarizer;
 
-import ie.dcu.cngl.tokeniser.SectionInfo;
+import ie.dcu.cngl.tokenizer.SectionInfo;
+
 import java.util.Vector;
 
 public class Aggregator {

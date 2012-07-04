@@ -1,4 +1,4 @@
-package ie.dcu.cngl.tokeniser;
+package ie.dcu.cngl.tokenizer;
 
 import java.util.*;
 import java.io.*;

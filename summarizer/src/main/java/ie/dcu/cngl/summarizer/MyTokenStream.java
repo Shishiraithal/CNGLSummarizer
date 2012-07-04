@@ -1,6 +1,6 @@
 package ie.dcu.cngl.summarizer;
 
-import ie.dcu.cngl.tokeniser.TokenInfo;
+import ie.dcu.cngl.tokenizer.TokenInfo;
 
 import java.io.IOException;
 import java.util.Iterator;

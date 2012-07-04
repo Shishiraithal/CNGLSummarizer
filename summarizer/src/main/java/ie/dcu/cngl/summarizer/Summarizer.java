@@ -4,11 +4,11 @@ import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
 
-import ie.dcu.cngl.tokeniser.Paragrapher;
-import ie.dcu.cngl.tokeniser.SectionInfo;
-import ie.dcu.cngl.tokeniser.Sentenizer;
-import ie.dcu.cngl.tokeniser.TokenInfo;
-import ie.dcu.cngl.tokeniser.Tokenizer;
+import ie.dcu.cngl.tokenizer.Paragrapher;
+import ie.dcu.cngl.tokenizer.SectionInfo;
+import ie.dcu.cngl.tokenizer.Sentenizer;
+import ie.dcu.cngl.tokenizer.TokenInfo;
+import ie.dcu.cngl.tokenizer.Tokenizer;
 
 public class Summarizer {
 	

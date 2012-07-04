@@ -1,7 +1,8 @@
 package ie.dcu.cngl.summarizer;
 
-import ie.dcu.cngl.tokeniser.TokenInfo;
-import ie.dcu.cngl.tokeniser.Tokenizer;
+import ie.dcu.cngl.tokenizer.TokenInfo;
+import ie.dcu.cngl.tokenizer.Tokenizer;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
