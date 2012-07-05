@@ -2,17 +2,13 @@ package ie.dcu.cngl.summarizer;
 
 import ie.dcu.cngl.tokenizer.SectionInfo;
 
-import java.util.Vector;
+import java.util.ArrayList;
 
-public class Aggregator {
+public class Aggregator implements IAggregator {
 	
-	private Vector<SectionInfo> sentences; 
+	private ArrayList<SectionInfo> sentences; 
 
-	public Aggregator(Vector<SectionInfo> sentences) {
-		this.sentences = sentences;
-	}
-
-	public SentenceScore[] aggregate(Vector<Double[]> allWeights) {
+	public SentenceScore[] aggregate(ArrayList<Double[]> allWeights) {
 		final int numSentences = sentences.size();
 		double[] totalWeights = new double[numSentences];
 		SentenceScore[] scores = new SentenceScore[numSentences];
@@ -70,5 +66,10 @@ public class Aggregator {
 			}
 		}
 		return maxIndex;
+	}
+
+	@Override
+	public void setSentences(ArrayList<SectionInfo> sentences) {
+		this.sentences = sentences;
 	}
 }

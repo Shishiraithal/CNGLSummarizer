@@ -1,20 +1,17 @@
 package ie.dcu.cngl.summarizer;
 
-import ie.dcu.cngl.tokenizer.SectionInfo;
-import ie.dcu.cngl.tokenizer.TokenInfo;
-
+import ie.dcu.cngl.tokenizer.PageStructure;
 import java.io.IOException;
-import java.util.Vector;
 
 public class TFISFFeature extends LuceneFeature {
 
-	public TFISFFeature(Vector<TokenInfo> tokens, Vector<SectionInfo> sentences, Vector<SectionInfo> paragraphs) throws IOException {
-		super(tokens, sentences, paragraphs);
+	public TFISFFeature(PageStructure structure) throws IOException {
+		super(structure);
 	}
 
 	@Override
 	protected float computeDeboost(int paragraphNumber, int sentenceNumber) {
-		return 1;
+		return 1;	//All will be treated the same
 	}
 
 }

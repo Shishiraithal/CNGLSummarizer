@@ -1,11 +1,10 @@
 package ie.dcu.cngl.summarizer;
 
-import ie.dcu.cngl.tokenizer.SectionInfo;
+import ie.dcu.cngl.tokenizer.PageStructure;
 import ie.dcu.cngl.tokenizer.TokenInfo;
-import ie.dcu.cngl.tokenizer.Tokenizer;
 
 import java.io.IOException;
-import java.util.Vector;
+import java.util.ArrayList;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -16,31 +15,25 @@ import org.apache.commons.lang.StringUtils;
  */
 public class ShortSentenceFeature extends Feature {
 	
-	private Tokenizer tokenizer;
 	private int minimumSentenceTerms;
 
-	public ShortSentenceFeature(Vector<TokenInfo> tokens, Vector<SectionInfo> sentences, Vector<SectionInfo> paragraphs) throws IOException {
-		super(tokens, sentences, paragraphs);
-		this.tokenizer = Tokenizer.getInstance();
+	public ShortSentenceFeature(PageStructure structure) throws IOException {
+		super(structure);
 		this.minimumSentenceTerms = 5;
 	}
 	
 	public void setMinimumSentenceTerms(int minimum) {
 		this.minimumSentenceTerms = minimum;
 	}
-	
-	public int getMinimumSentenceTerms() {
-		return this.minimumSentenceTerms;
-	}
 
 	@Override
 	public Double[] getWeights() {
-		final int numSentences = sentences.size();
+		final int numSentences = structure.getNumSentences();
 		Double[] weights = new Double[numSentences];
 		
-		Vector<TokenInfo> tokens;
+		ArrayList<TokenInfo> tokens;
 		for(int i = 0; i < numSentences; i++) {
-			tokens = tokenizer.tokenize(sentences.get(i).getValue());
+			tokens = structure.getSentenceTokens(i);
 			tokens = filterPunctuation(tokens);
 			weights[i] = tokens.size() < this.minimumSentenceTerms ? -1.0 : 0.0;
 		}
@@ -48,8 +41,8 @@ public class ShortSentenceFeature extends Feature {
 		return weights;
 	}
 
-	private Vector<TokenInfo> filterPunctuation(Vector<TokenInfo> tokens) {
-		Vector<TokenInfo> alphaNumericTokens = new Vector<TokenInfo>();
+	private ArrayList<TokenInfo> filterPunctuation(ArrayList<TokenInfo> tokens) {
+		ArrayList<TokenInfo> alphaNumericTokens = new ArrayList<TokenInfo>();
 		
 		for(TokenInfo token : tokens) {
 			if(StringUtils.isAlphanumeric(token.getValue())) {

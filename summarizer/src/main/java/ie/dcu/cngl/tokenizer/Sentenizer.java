@@ -96,33 +96,34 @@ public class Sentenizer implements ISentenizer {
     	return bse.contains(s);
     }
 
-    public synchronized Vector<Vector<TokenInfo>> sentenizeTokens(String s) {
-		Vector<TokenInfo> tok_vec = tokenizer.tokenize(s);
-		if (tok_vec == null)
+    public synchronized ArrayList<ArrayList<TokenInfo>> sentenizeTokens(String s) {
+		ArrayList<TokenInfo> tokens = tokenizer.tokenize(s);
+		if (tokens == null)
 		    return null;
 		
-		int tok_len = tok_vec.size();
-		int tok_pos = 0;
-		Vector<TokenInfo> sentence = new Vector<TokenInfo>();
-		Vector<Vector<TokenInfo>> sentences = new Vector<Vector<TokenInfo>>();
-		TokenInfo prevTokInfo = null;
-		TokenInfo currentTokInfo = null;
-		TokenInfo nextTokInfo = null;
+		int numTokens = tokens.size();
+		int tokenIndex = 0;
+		ArrayList<TokenInfo> sentence = new ArrayList<TokenInfo>();
+		ArrayList<ArrayList<TokenInfo>> sentences = new ArrayList<ArrayList<TokenInfo>>();
+		TokenInfo prevTokInfo = null, currentTokInfo = null, nextTokInfo = null;
 		String previousToken = StringUtils.EMPTY, currentToken = StringUtils.EMPTY, nextToken = StringUtils.EMPTY;
 	    boolean inQuotes = false, isSentence = false;
-		while (tok_pos < tok_len) {
+		while (tokenIndex < numTokens) {
 	    	//Update all token info
 		    prevTokInfo = currentTokInfo;
 		    currentTokInfo = nextTokInfo;
-		    nextTokInfo = tok_vec.elementAt(tok_pos);
+		    nextTokInfo = tokens.get(tokenIndex);
 		    
 		    //Update token str values
 	        previousToken = currentToken;
 	        currentToken = nextToken;
 	        nextToken = nextTokInfo.getValue();
 
-		    if (currentTokInfo != null)
+		    if(currentTokInfo != null)
 				sentence.add(currentTokInfo);
+		    
+		    if(numTokens == 1)
+		    	sentence.add(nextTokInfo);
 
 		    if(currentTokInfo != null && currentTokInfo.getLineNum() < nextTokInfo.getLineNum() && nextTokInfo.getStart()-(currentTokInfo.getStart()+currentTokInfo.getLength()) > 1) {
 		    	isSentence = true;		//New line
@@ -149,10 +150,10 @@ public class Sentenizer implements ISentenizer {
 		    if(sentence.size() > 0 && currentToken != null && isSentence) { 
 		    	if(!inQuotes) {
 					sentences.add(sentence);
-					sentence = new Vector<TokenInfo>();
+					sentence = new ArrayList<TokenInfo>();
 		    	}
 		    }
-		    tok_pos++;
+		    tokenIndex++;
 		}
 		
 	    if (sentence.size() > 0 && currentToken != null) { 
@@ -161,17 +162,6 @@ public class Sentenizer implements ISentenizer {
 		}
 	    
 	    return sentences;
-    }
-    
-    public synchronized Vector<SectionInfo> sentenize(String text) {
-    	Vector<SectionInfo> sentences = new Vector<SectionInfo>();
-    	
-    	Vector<String> strSentences = TokenizerUtils.recombineTokens(sentenizeTokens(text));
-    	for(int i = 0; i < strSentences.size(); i++) {
-    		sentences.add(new SectionInfo(strSentences.get(i), i));
-    	}
-    	
-    	return sentences;
     }
 
 }

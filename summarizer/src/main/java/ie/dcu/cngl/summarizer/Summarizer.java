@@ -1,28 +1,29 @@
 package ie.dcu.cngl.summarizer;
 
-import java.util.Vector;
+import java.util.ArrayList;
 
 import org.apache.commons.lang.StringUtils;
 
-import ie.dcu.cngl.tokenizer.Paragrapher;
-import ie.dcu.cngl.tokenizer.SectionInfo;
-import ie.dcu.cngl.tokenizer.Sentenizer;
-import ie.dcu.cngl.tokenizer.TokenInfo;
+import ie.dcu.cngl.tokenizer.IStructurer;
+import ie.dcu.cngl.tokenizer.PageStructure;
 import ie.dcu.cngl.tokenizer.Tokenizer;
 
 public class Summarizer {
 	
 	private Tokenizer tokenizer;
-	private Sentenizer sentinzer;
-	private Paragrapher paragrapher;
+	private IStructurer structurer;	
+	private IWeighter weighter;
+	private IAggregator aggregator;
 	
 	private int numSentences;
+	private String title;
 	private String query;
 	
-	public Summarizer() {
-		tokenizer = Tokenizer.getInstance();
-		sentinzer = Sentenizer.getInstance();
-		paragrapher = Paragrapher.getInstance();
+	public Summarizer(IStructurer structurer, IWeighter weighter, IAggregator aggregator) {
+		this.tokenizer = Tokenizer.getInstance();
+		this.weighter = weighter;
+		this.aggregator = aggregator;
+		this.structurer = structurer;
 		this.numSentences = 2;	//Default number of sentences
 	}
 	
@@ -30,22 +31,18 @@ public class Summarizer {
 		this.numSentences = numSentences;
 	}
 	
-	public String summarize(String title, String content) {
+	public String summarize(String content) {
 		if(StringUtils.isEmpty(content)) {
 			return StringUtils.EMPTY;
 		}
 		
-		Vector<TokenInfo> tokens = tokenizer.tokenize(content);
-		Vector<SectionInfo> sentences = sentinzer.sentenize(content);
-		Vector<SectionInfo> paragraphs = paragrapher.paragraph(content);
-		
-		Weighter weighter = new Weighter(tokens, sentences, paragraphs);
+		PageStructure structure = structurer.getStructure(content);	
+		weighter.setStructure(structure);
 		weighter.setTitle(StringUtils.isNotEmpty(title) ? tokenizer.tokenize(title) : null);
 		weighter.setQuery(StringUtils.isNotEmpty(query) ? tokenizer.tokenize(query) : null);
+		aggregator.setSentences(structure.getSentences());
 		
-		Aggregator aggregator = new Aggregator(sentences);
-		
-		Vector<Double[]> weights = weighter.calculateWeights();
+		ArrayList<Double[]> weights = weighter.calculateWeights();
 		SentenceScore [] scores = aggregator.aggregate(weights);
 		
 		String summary = StringUtils.EMPTY;
@@ -55,6 +52,10 @@ public class Summarizer {
 		}
 		
 		return summary;
+	}
+	
+	public void setTitle(String title) {
+		this.title = title;
 	}
 
 	public void setQuery(String query) {

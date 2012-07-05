@@ -1,85 +1,26 @@
 package ie.dcu.cngl.summarizer;
 
-import ie.dcu.cngl.tokenizer.SectionInfo;
+import ie.dcu.cngl.tokenizer.PageStructure;
 import ie.dcu.cngl.tokenizer.TokenInfo;
 
 import java.io.IOException;
-import java.util.Vector;
+import java.util.ArrayList;
 
-public class Weighter {
+public class Weighter implements IWeighter {
 	
-	private Vector<TokenInfo> tokens;
-	private Vector<SectionInfo> sentences;
-	private Vector<SectionInfo> paragraphs;
+	private PageStructure structure;
+	ArrayList<Feature> features;
 	
-	private Vector<TokenInfo> title;
-	private Vector<TokenInfo> query;
-
-	public Weighter(Vector<TokenInfo> tokens, Vector<SectionInfo> sentences, Vector<SectionInfo> paragraphs) {
-		this.tokens = tokens;
-		this.sentences = sentences;
-		this.paragraphs = paragraphs;
+	private ArrayList<TokenInfo> title;
+	private ArrayList<TokenInfo> query;
+	
+	public Weighter() {
+		this.features = new ArrayList<Feature>();
 	}
 	
-	public Vector<Double[]> calculateWeights() {
-		Vector<Double[]> weights = new Vector<Double[]>();
-		Vector<Feature> features = new Vector<Feature>();
-		
-		//Adding all features
-		try {
-			SkimmingFeature skimFeat = new SkimmingFeature(tokens, sentences, paragraphs);
-			skimFeat.setTopTermCutoff(0.3f);
-			features.add(skimFeat);
-		} catch (IOException e) {
-			System.err.println("Skimming feature failed.");
-			e.printStackTrace();
-		}
-		
-		try {
-			features.add(new TFISFFeature(tokens, sentences, paragraphs));
-		} catch (IOException e) {
-			System.err.println("TS-ISF feature failed.");
-			e.printStackTrace();
-		}
-		
-		try {
-			features.add(new NamedEntityFeature(tokens, sentences, paragraphs));
-		} catch (IOException e) {
-			System.err.println("Named entity feature failed.");
-			e.printStackTrace();
-		}
-		
-		if(title != null) {
-			try {
-				features.add(new TitleTermFeature(title, tokens, sentences, paragraphs));
-			} catch (IOException e) {
-				System.err.println("Title terms feature failed.");
-				e.printStackTrace();
-			}
-		}
-		
-		try {
-			features.add(new CuePhraseFeature(tokens, sentences, paragraphs));
-		} catch (IOException e) {
-			System.err.println("Cue phrases feature failed.");
-			e.printStackTrace();
-		}
-		
-		try {
-			features.add(new ShortSentenceFeature(tokens, sentences, paragraphs));
-		} catch (IOException e) {
-			System.err.println("Short sentence feature failed.");
-			e.printStackTrace();
-		}
-		
-		if(query != null) {
-			try {
-				features.add(new QueryBiasFeature(query, tokens, sentences, paragraphs));
-			} catch (IOException e) {
-				System.err.println("Query bias feature failed.");
-				e.printStackTrace();
-			}
-		}
+	public ArrayList<Double[]> calculateWeights() {
+		ArrayList<Double[]> weights = new ArrayList<Double[]>();
+		addFeatures();
 		
 		//Executing features
 		for(Feature feature : features) {
@@ -89,11 +30,74 @@ public class Weighter {
 		return weights;
 	}
 	
-	public void setTitle(Vector<TokenInfo> titleTokens) {
+	@Override
+	public void addFeatures() {
+		try {
+			SkimmingFeature skimFeat = new SkimmingFeature(structure);
+			skimFeat.setTopTermCutoff(0.3f);
+			features.add(skimFeat);
+		} catch (IOException e) {
+			System.err.println("Skimming feature failed.");
+			e.printStackTrace();
+		}
+		
+		try {
+			features.add(new TFISFFeature(structure));
+		} catch (IOException e) {
+			System.err.println("TS-ISF feature failed.");
+			e.printStackTrace();
+		}
+		
+		try {
+			features.add(new NamedEntityFeature(structure));
+		} catch (IOException e) {
+			System.err.println("Named entity feature failed.");
+			e.printStackTrace();
+		}
+		
+		if(title != null) {
+			try {
+				features.add(new TitleTermFeature(title, structure));
+			} catch (IOException e) {
+				System.err.println("Title terms feature failed.");
+				e.printStackTrace();
+			}
+		}
+		
+		try {
+			features.add(new CuePhraseFeature(structure));
+		} catch (IOException e) {
+			System.err.println("Cue phrases feature failed.");
+			e.printStackTrace();
+		}
+		
+		try {
+			features.add(new ShortSentenceFeature(structure));
+		} catch (IOException e) {
+			System.err.println("Short sentence feature failed.");
+			e.printStackTrace();
+		}
+		
+		if(query != null) {
+			try {
+				features.add(new QueryBiasFeature(query, structure));
+			} catch (IOException e) {
+				System.err.println("Query bias feature failed.");
+				e.printStackTrace();
+			}
+		}
+	}
+
+	@Override
+	public void setStructure(PageStructure structure) {
+		this.structure = structure;
+	}
+	
+	public void setTitle(ArrayList<TokenInfo> titleTokens) {
 		this.title = titleTokens;
 	}
 	
-	public void setQuery(Vector<TokenInfo> queryTokens) {
+	public void setQuery(ArrayList<TokenInfo> queryTokens) {
 		this.query = queryTokens;
 	}
 

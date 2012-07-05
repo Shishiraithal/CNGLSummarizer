@@ -1,51 +1,44 @@
 package ie.dcu.cngl.summarizer;
 
-import ie.dcu.cngl.tokenizer.SectionInfo;
+import ie.dcu.cngl.tokenizer.PageStructure;
 import ie.dcu.cngl.tokenizer.TokenInfo;
 import ie.dcu.cngl.tokenizer.TokenizerUtils;
 
 import java.io.IOException;
 import java.io.StringReader;
-import java.util.Vector;
+import java.util.ArrayList;
 
-import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.TokenStream;
 
 public abstract class Feature {
 	
-	protected Analyzer analyzer;
-	protected Vector<TokenInfo> tokens;
-	protected Vector<SectionInfo> sentences; 
-	protected Vector<SectionInfo> paragraphs;
+	protected SummaryAnalyzer analyzer;
+	protected PageStructure structure;
 	
-	public Feature(Vector<TokenInfo> tokens, Vector<SectionInfo> sentences, Vector<SectionInfo> paragraphs) throws IOException {
+	public Feature(PageStructure structure) throws IOException {
+		this.structure = structure;
 		this.analyzer = new SummaryAnalyzer();
-		this.setTokens(tokens);
-		this.setSentences(sentences);
-		this.setParagraphs(paragraphs);
 	}
 	
 	public abstract Double[] getWeights();
 	
 	protected int getNumOccurences(String str, String longerStr) {
 		int len = str.length();
-		int result = 0;
+		int numOccurences = 0;
 		if (len > 0) {  
 			int start = longerStr.indexOf(str);
 			while (start != -1) {
-				result++;
+				numOccurences++;
 				start = longerStr.indexOf(str, start+len);
 			}
 		}
-		return result;
+		return numOccurences;
 	}
 	
-	protected double numberOfTerms(Vector<TokenInfo> sentence) {
+	protected double numberOfTerms(ArrayList<TokenInfo> sentence) {
 		double numTerms = 0;
-
-		Vector<Vector<TokenInfo>> sentenceHolder = new Vector<Vector<TokenInfo>>();
-		sentenceHolder.add(sentence);
-		StringReader reader = new StringReader(TokenizerUtils.recombineTokens(sentenceHolder).get(0));
+		
+		StringReader reader = new StringReader(TokenizerUtils.recombineTokens1d(sentence));
 		TokenStream tokenStream = analyzer.tokenStream(null, reader);
 
 		try {
@@ -74,30 +67,6 @@ public abstract class Feature {
 			}
 		}
 		return max;
-	}
-
-	public void setParagraphs(Vector<SectionInfo> paragraphs) {
-		this.paragraphs = paragraphs;
-	}
-
-	public Vector<SectionInfo> getParagraphs() {
-		return paragraphs;
-	}
-
-	public void setSentences(Vector<SectionInfo> sentences) {
-		this.sentences = sentences;
-	}
-
-	public Vector<SectionInfo> getSentences() {
-		return sentences;
-	}
-
-	public void setTokens(Vector<TokenInfo> tokens) {
-		this.tokens = tokens;
-	}
-
-	public Vector<TokenInfo> getTokens() {
-		return tokens;
 	}
 	
 }

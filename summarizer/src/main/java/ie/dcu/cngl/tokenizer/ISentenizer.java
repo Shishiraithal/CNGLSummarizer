@@ -1,7 +1,7 @@
 package ie.dcu.cngl.tokenizer;
 
-import java.util.Vector;
+import java.util.ArrayList;
 
 public interface ISentenizer {
-    public Vector<Vector<TokenInfo>> sentenizeTokens(String sentence);
+    public ArrayList<ArrayList<TokenInfo>> sentenizeTokens(String sentence);
 }

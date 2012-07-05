@@ -1,33 +1,34 @@
 package ie.dcu.cngl.summarizer;
 
-import ie.dcu.cngl.tokenizer.SectionInfo;
+import ie.dcu.cngl.tokenizer.PageStructure;
 import ie.dcu.cngl.tokenizer.TokenInfo;
 
 import java.io.IOException;
-import java.util.Vector;
+import java.util.ArrayList;
 
 public class TitleTermFeature extends Feature {
 
-	private Vector<TokenInfo> titleTokens;
+	private ArrayList<TokenInfo> titleTokens;
 
-	public TitleTermFeature(Vector<TokenInfo> titleTokens, Vector<TokenInfo> tokens, Vector<SectionInfo> sentences, Vector<SectionInfo> paragraphs) throws IOException {
-		super(tokens, sentences, paragraphs);
+	public TitleTermFeature(ArrayList<TokenInfo> titleTokens, PageStructure structure) throws IOException {
+		super(structure);
 		this.titleTokens = titleTokens;
 	}
 
 	@Override
 	public Double [] getWeights() {
-		Double [] weights = new Double[sentences.size()];
+		Double [] weights = new Double[structure.getNumSentences()];
 		for(int i = 0; i < weights.length; i++) {
 			weights[i] = 0.0;
 		}
 
-		for(int i = 0; i < sentences.size(); i++) {
+		final double numTitleTerms = numberOfTerms(titleTokens);
+		for(int i = 0; i < structure.getNumSentences(); i++) {
 			double numOccurences = 0;
 			for(int j = 0; j < titleTokens.size(); j++) {
-				numOccurences+=getNumOccurences(titleTokens.get(j).getValue(), sentences.get(i).getValue());
+				numOccurences+=getNumOccurences(titleTokens.get(j).getValue(), structure.getSentences().get(i).getValue());
 			}
-			weights[i] = numOccurences/(double)titleTokens.size();
+			weights[i] = numOccurences/numTitleTerms;
 		}
 
 		normalise(weights);

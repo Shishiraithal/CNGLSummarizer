@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-import java.util.Vector;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
@@ -32,9 +31,9 @@ import org.apache.lucene.util.Version;
 public class SummaryAnalyzer extends Analyzer {
 
 	private Set<Object> stopset;
-
-		String[] stopwords = filterComments(StringUtils.split(FileUtils.readFileToString(new File(SummarizationUtils.stopwords), "UTF-8")));
-		public SummaryAnalyzer() throws IOException {
+	private String[] stopwords = filterComments(StringUtils.split(FileUtils.readFileToString(new File(SummarizerUtils.stopwords), "UTF-8")));
+	
+	public SummaryAnalyzer() throws IOException {
 		this.stopset = StopFilter.makeStopSet(Version.LUCENE_36, stopwords, true);
 	}
 
@@ -42,17 +41,9 @@ public class SummaryAnalyzer extends Analyzer {
 	public TokenStream tokenStream(String fieldName, Reader reader) {
 		Tokenizer tokenizer = Tokenizer.getInstance();
 		String text = getText(reader);
-		Vector<TokenInfo> tokens = tokenizer.tokenize(text);
+		ArrayList<TokenInfo> tokens = tokenizer.tokenize(text);
 		Iterator<TokenInfo> iter = tokens.iterator();
-		
-//		return new PorterStemFilter(
-//				new StopFilter(
-//						Version.LUCENE_36,
-//						new LowerCaseFilter(Version.LUCENE_36,
-//								new NumericTokenFilter(
-//										new StandardFilter(Version.LUCENE_36,
-//												new StandardTokenizer(Version.LUCENE_36, reader)))), 
-//												stopset));
+
 		return new PorterStemFilter(
 				new StopFilter(Version.LUCENE_36,
 					new StandardFilter(Version.LUCENE_36,

@@ -29,10 +29,10 @@ public class Tokenizer implements ITokenizer {
     private int mLastTokenStartPosition = -1;
     private int mLastTokenEndPosition = -1;
 
-    private static HashMap<String, Vector<Vector<String>>> abbrevs;
+    private static HashMap<String, ArrayList<ArrayList<String>>> abbrevs;
 
     private Tokenizer() {
-		abbrevs = new HashMap<String, Vector<Vector<String>>>();
+		abbrevs = new HashMap<String, ArrayList<ArrayList<String>>>();
 		loadAbbreviations(TokenizerUtils.abbreviations);
     }
     
@@ -59,8 +59,8 @@ public class Tokenizer implements ITokenizer {
 						// get rid of quotes
 						line = line.substring(1, line.length()-1);
 				    }
-				    Vector<String> repl = new Vector<String>();
-				    Vector<TokenInfo> term_elts = tokenize(line, false);
+				    ArrayList<String> repl = new ArrayList<String>();
+				    ArrayList<TokenInfo> term_elts = tokenize(line, false);
 				    TokenInfo term0 = term_elts.get(0);
 				    String term_one = term0.getValue();
 				    repl.add(line);
@@ -69,9 +69,9 @@ public class Tokenizer implements ITokenizer {
 						String oelt = termI.getValue();
 						repl.add(oelt);
 				    }
-				    Vector<Vector<String>> entry = abbrevs.get(term_one);
+				    ArrayList<ArrayList<String>> entry = abbrevs.get(term_one);
 				    if (entry == null) {
-				    	entry = new Vector<Vector<String>>();
+				    	entry = new ArrayList<ArrayList<String>>();
 				    }
 				    entry.add(repl);
 				    abbrevs.put(term_one, entry);
@@ -197,14 +197,14 @@ public class Tokenizer implements ITokenizer {
         return curToken();
     }
 
-    public synchronized Vector<TokenInfo> tokenize(String s, boolean postprocess) {
+    public synchronized ArrayList<TokenInfo> tokenize(String s, boolean postprocess) {
         mChars = s.toCharArray();
         mPosition = 0;
         mLastPosition = s.length();
         mTokenStart = -1;
         mLastTokenIndex = -1;
         mStartPosition = 0;
-        Vector<TokenInfo> tokens = new Vector<TokenInfo>();
+        ArrayList<TokenInfo> tokens = new ArrayList<TokenInfo>();
         String token;
         while ((token = getValue()) != null) {
 		    TokenInfo ti = new TokenInfo(token);
@@ -220,30 +220,30 @@ public class Tokenizer implements ITokenizer {
         return tokens;
     }
 
-    public Vector<TokenInfo> tokenize(String s) {
+    public ArrayList<TokenInfo> tokenize(String s) {
     	return tokenize(s, true);
     }
 
-    public Vector<String> tokenizeString(String s) {
-		Vector<TokenInfo> tis = tokenize(s);
-		Vector<String> ts = new Vector<String>();
+    public ArrayList<String> tokenizeString(String s) {
+		ArrayList<TokenInfo> tis = tokenize(s);
+		ArrayList<String> ts = new ArrayList<String>();
 		for (int i = 0; i < tis.size(); i++) {
-		    TokenInfo ti = (TokenInfo)tis.elementAt(i);
+		    TokenInfo ti = (TokenInfo)tis.get(i);
 		    ts.add(ti.getValue());
 		}
 		return ts;
     }
 
-    public static Vector<TokenInfo> postTokenize(Vector<TokenInfo> tok_vec) {
+    public static ArrayList<TokenInfo> postTokenize(ArrayList<TokenInfo> tok_vec) {
 		int tok_cnt = tok_vec.size();
 	    int tok_pos = 0;
 		int nskip = 1;
 		while (tok_pos < tok_cnt) {
-		    TokenInfo ti = tok_vec.elementAt(tok_pos);
+		    TokenInfo ti = tok_vec.get(tok_pos);
             String token = ti.getValue();
             String ltoken = token.toLowerCase();
-		    Vector<Vector<String>> repl_entries = null;
-            Vector<String> repl_entry;
+		    ArrayList<ArrayList<String>> repl_entries = null;
+            ArrayList<String> repl_entry;
             int max_repl_len = 0;
 		    
             // acronym heuristics
@@ -254,12 +254,12 @@ public class Tokenizer implements ITokenizer {
 				    repl_entries = abbrevs.get(ltoken);
 				if (repl_entries != null) {
 				    for (int j = 0; j < repl_entries.size(); j++) { // find longest (#terms)
-					repl_entry = repl_entries.elementAt(j);
+					repl_entry = repl_entries.get(j);
 					int i = 0;
 					while (repl_entry != null && i < repl_entry.size()) {
 					    mcount = MWEmatch(tok_vec, tok_pos+1, repl_entry, 1, 1);
 					    if (mcount > max_repl_len) {
-						String repl = repl_entry.elementAt(0);
+						String repl = repl_entry.get(0);
 						nskip = mcount;
 						max_repl_len = mcount;
 						token = repl;
@@ -271,14 +271,14 @@ public class Tokenizer implements ITokenizer {
 		    }
 		    if (nskip > 0) {
 				// get last token 
-				TokenInfo lti = tok_vec.elementAt(tok_pos + nskip-1);
+				TokenInfo lti = tok_vec.get(tok_pos + nskip-1);
 				int lti_end = lti.getStart() + lti.getLength();
 				String ls = StringUtils.EMPTY;
 				for (int k = 1; k < nskip && tok_pos+1 < tok_cnt; k++) {
 				    // remove next token
-				    TokenInfo kti = tok_vec.elementAt(tok_pos+1);
+				    TokenInfo kti = tok_vec.get(tok_pos+1);
 				    ls = combineTokens(ls, kti.getValue());
-				    tok_vec.removeElementAt(tok_pos+1);
+				    tok_vec.remove(tok_pos+1);
 				    tok_cnt--;
 				}
 				// modify current token
@@ -300,15 +300,15 @@ public class Tokenizer implements ITokenizer {
     }
     
     // match token list and phrase pattern
-    public static int MWEmatch(Vector<TokenInfo> tok_vec, int tok_pos, Vector<String> pat, int pat_pos, int mcount) {
+    public static int MWEmatch(ArrayList<TokenInfo> tok_vec, int tok_pos, ArrayList<String> pat, int pat_pos, int mcount) {
         if (pat_pos >= pat.size()) { // reached end of pattern
             return mcount;
         } else if (tok_pos >= tok_vec.size()) { // reached end of token list
             return -1;
         } else {
-            TokenInfo ti = tok_vec.elementAt(tok_pos);
+            TokenInfo ti = tok_vec.get(tok_pos);
             String tokelt = ti.getValue();
-            String patelt = pat.elementAt(pat_pos);
+            String patelt = pat.get(pat_pos);
             tokelt = tokelt.toLowerCase(); // !
             //
             if (tokelt == null  || tokelt.equals(StringUtils.EMPTY)) {
@@ -321,24 +321,24 @@ public class Tokenizer implements ITokenizer {
         }
     }
 
-    public static int ACROmatch(Vector<TokenInfo> tok_vec, int tok_pos) {
+    public static int ACROmatch(ArrayList<TokenInfo> tok_vec, int tok_pos) {
 		int tok_len = tok_vec.size();
 		int mcount = 1;
 		if (tok_pos+1 >= tok_len)
 		    return 0;
 		
-		TokenInfo cur = tok_vec.elementAt(tok_pos);
+		TokenInfo cur = tok_vec.get(tok_pos);
 		String curS = cur.getValue();
-		TokenInfo nxt = tok_vec.elementAt(tok_pos+1);
+		TokenInfo nxt = tok_vec.get(tok_pos+1);
 		String nxtS = nxt.getValue();
 		if (nxtS.equals(".") && (Character.isLetter(curS.charAt(0)) && curS.length()==1)) { // Initial
 		    // return or scan ahead
 		    mcount = 2; 
 		    int a_pos =tok_pos+2;
 		    while (a_pos+1 < tok_len) {
-				cur = (TokenInfo)tok_vec.elementAt(a_pos);
+				cur = (TokenInfo)tok_vec.get(a_pos);
 				curS = cur.getValue();
-				nxt = (TokenInfo)tok_vec.elementAt(a_pos+1);
+				nxt = (TokenInfo)tok_vec.get(a_pos+1);
 				nxtS = nxt.getValue();
 				if (nxtS.equals(".") && (Character.isLetter(curS.charAt(0)) ||
 						Character.isDigit(curS.charAt(0))) && curS.length() == 1) { // Initial
@@ -379,7 +379,7 @@ public class Tokenizer implements ITokenizer {
 		return false;
     }
 
-    public static Vector<TokenInfo> deHyphenate(Vector<TokenInfo> tok_vec, String s) {
+    public static ArrayList<TokenInfo> deHyphenate(ArrayList<TokenInfo> tok_vec, String s) {
 		int tok_cnt = tok_vec.size();
 	    int tok_pos = 0;
 		TokenInfo ti1 = null;
@@ -389,7 +389,7 @@ public class Tokenizer implements ITokenizer {
 	    while (tok_pos < tok_cnt) {
 		    ti1 = ti2;
 		    ti2 = ti3;
-		    ti3 = tok_vec.elementAt(tok_pos);
+		    ti3 = tok_vec.get(tok_pos);
             tok1 = tok2;
             tok2 = tok3;
             tok3 = ti3.getValue();
@@ -403,13 +403,13 @@ public class Tokenizer implements ITokenizer {
 				    ti1.setValue(ti1.getValue() + ti3.getValue());
 				    ti1.setLength(ti3.getStart() + ti3.getLength() - ti1.getStart());
 				    // remove matching tokens
-				    tok_vec.removeElementAt(tok_pos - 1);
-				    tok_vec.removeElementAt(tok_pos - 1);
+				    tok_vec.remove(tok_pos - 1);
+				    tok_vec.remove(tok_pos - 1);
 				    tok_cnt -= 2;
 				    // re-initialize
-				    ti1 = (TokenInfo)tok_vec.elementAt(tok_pos - 3);
-				    ti2 = (TokenInfo)tok_vec.elementAt(tok_pos - 2);
-				    ti3 = (TokenInfo)tok_vec.elementAt(tok_pos - 1);
+				    ti1 = (TokenInfo)tok_vec.get(tok_pos - 3);
+				    ti2 = (TokenInfo)tok_vec.get(tok_pos - 2);
+				    ti3 = (TokenInfo)tok_vec.get(tok_pos - 1);
 				    tok1 = ti1.getValue();
 				    tok2 = ti2.getValue();
 				    tok3 = ti3.getValue();

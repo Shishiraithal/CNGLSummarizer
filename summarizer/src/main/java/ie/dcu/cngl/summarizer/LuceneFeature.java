@@ -1,7 +1,8 @@
 package ie.dcu.cngl.summarizer;
 
+import ie.dcu.cngl.tokenizer.PageStructure;
 import ie.dcu.cngl.tokenizer.SectionInfo;
-import ie.dcu.cngl.tokenizer.Sentenizer;
+
 import ie.dcu.cngl.tokenizer.TokenInfo;
 import ie.dcu.cngl.tokenizer.TokenizerUtils;
 
@@ -12,7 +13,6 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.document.Document;
@@ -41,11 +41,11 @@ public abstract class LuceneFeature extends Feature {
 	
 	private float topTermCutoff;
 
-	public LuceneFeature(Vector<TokenInfo> tokens, Vector<SectionInfo> sentences, Vector<SectionInfo> paragraphs) throws IOException {
-		super(tokens, sentences, paragraphs);
+	public LuceneFeature(PageStructure structure) throws IOException {
+		super(structure);
 		this.ramdir = new RAMDirectory();
 		this.sentenceMap = new HashMap<Integer, SectionInfo>();
-		for(SectionInfo sentence : sentences) {
+		for(SectionInfo sentence : structure.getSentences()) {
 			sentenceMap.put(sentence.hashCode(), sentence);
 		}
 	}
@@ -78,14 +78,12 @@ public abstract class LuceneFeature extends Feature {
 	}
 	
 	protected void buildIndex() throws Exception {
-		Sentenizer sentenceTokenizer = Sentenizer.getInstance();
 		IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_36, analyzer);
 		IndexWriter writer = new IndexWriter(ramdir, config);
 		
 		int pno = 0;
-		for(SectionInfo paragraph : paragraphs) {
-			Vector<Vector<TokenInfo>> sentences = sentenceTokenizer.sentenizeTokens(paragraph.getValue());
-			Vector<String> strSentences = TokenizerUtils.recombineTokens(sentences);
+		for(ArrayList<ArrayList<TokenInfo>> paragraph : structure.getStructure()) {
+			ArrayList<String> strSentences = TokenizerUtils.recombineTokens2d(paragraph);
 			int sno = 0;
 			for(String sentence : strSentences) {
 				Document doc = new Document();
@@ -159,14 +157,14 @@ public abstract class LuceneFeature extends Feature {
 	}
 	
 	protected Double[] searchIndex(Query query) throws Exception {
-		Double [] weights = new Double[sentences.size()];
+		Double [] weights = new Double[structure.getNumSentences()];
 		for(int i = 0; i < weights.length; i++) {
 			weights[i] = 0.0;
 		}
 		IndexReader reader = IndexReader.open(ramdir);
 		IndexSearcher searcher = new IndexSearcher(reader);
 		
-		TopDocs topDocs = searcher.search(query, sentences.size());
+		TopDocs topDocs = searcher.search(query, structure.getNumSentences());
 		for (ScoreDoc scoreDoc : topDocs.scoreDocs) {
 			Document doc = searcher.doc(scoreDoc.doc);
 			String sentence = StringUtils.chomp(doc.get("text"));

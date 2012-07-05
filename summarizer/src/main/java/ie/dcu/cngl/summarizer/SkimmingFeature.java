@@ -1,10 +1,7 @@
 package ie.dcu.cngl.summarizer;
 
-import ie.dcu.cngl.tokenizer.SectionInfo;
-import ie.dcu.cngl.tokenizer.TokenInfo;
-
+import ie.dcu.cngl.tokenizer.PageStructure;
 import java.io.IOException;
-import java.util.Vector;
 
 public class SkimmingFeature extends LuceneFeature {
 	
@@ -14,8 +11,8 @@ public class SkimmingFeature extends LuceneFeature {
 	private float sentenceDeboost;
 	private float sentenceDeboostBase = 0.5F;
 
-	public SkimmingFeature(Vector<TokenInfo> tokens, Vector<SectionInfo> sentences, Vector<SectionInfo> paragraphs) throws IOException {
-		super(tokens, sentences, paragraphs);
+	public SkimmingFeature(PageStructure structure) throws IOException {
+		super(structure);
 	}
 
 	public void setSentenceDeboost(float sentenceDeboost) {

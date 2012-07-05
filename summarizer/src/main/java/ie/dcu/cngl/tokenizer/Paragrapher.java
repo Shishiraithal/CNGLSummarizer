@@ -24,13 +24,13 @@ public class Paragrapher {
     	return instance;
     }
 
-    public synchronized Vector<Vector<TokenInfo>> paragraphTokens(String s) {
-		Vector<TokenInfo> tok_vec = tokenizer.tokenize(s);
+    public synchronized ArrayList<ArrayList<TokenInfo>> paragraphTokens(String s) {
+		ArrayList<TokenInfo> tok_vec = tokenizer.tokenize(s);
 		if (tok_vec == null)
 		    return null;
 		
-		Vector<TokenInfo> sentence = new Vector<TokenInfo>();
-		Vector<Vector<TokenInfo>> sentences = new Vector<Vector<TokenInfo>>();
+		ArrayList<TokenInfo> sentence = new ArrayList<TokenInfo>();
+		ArrayList<ArrayList<TokenInfo>> sentences = new ArrayList<ArrayList<TokenInfo>>();
 		
 		TokenInfo currentTokInfo = null;
 		TokenInfo nextTokInfo = null;
@@ -41,7 +41,7 @@ public class Paragrapher {
 	    while (tok_pos < tok_len) {
 	    	//Update all token info
 		    currentTokInfo = nextTokInfo;
-		    nextTokInfo = (TokenInfo)tok_vec.elementAt(tok_pos);
+		    nextTokInfo = (TokenInfo)tok_vec.get(tok_pos);
 		    
 		    //Update token str values
 	        currentToken = nextToken;
@@ -56,7 +56,7 @@ public class Paragrapher {
 		    		&& (currentTokInfo.getLineNum() < nextTokInfo.getLineNum() 	//New line
 		    				&& nextTokInfo.getStart()-(currentTokInfo.getStart()+currentTokInfo.getLength()) > 1)) {
 				sentences.add(sentence);
-				sentence = new Vector<TokenInfo>();
+				sentence = new ArrayList<TokenInfo>();
 		    }
 		    tok_pos++;
 		}
@@ -66,31 +66,7 @@ public class Paragrapher {
 		    sentences.add(sentence);
 		}
 	    
-//	    //Creates string vector
-//	    Vector<Vector<String>> strSentences = new Vector<Vector<String>>();
-//	    Vector<String> currentSentence;
-//	    for(Vector<TokenInfo> vectSentence : sentences) {
-//	    	currentSentence = new Vector<String>();
-//	    	for(TokenInfo token : vectSentence) {
-//	    		currentSentence.add(token.getToken());
-//	    	}
-//	    	strSentences.add(currentSentence);
-//	    }
-//	    
-//		return strSentences;
-	    
 	    return sentences;
-    }
-    
-    public synchronized Vector<SectionInfo> paragraph(String text) {
-    	Vector<SectionInfo> paragraphs = new Vector<SectionInfo>();
-    	
-    	Vector<String> strParagraphs = TokenizerUtils.recombineTokens(paragraphTokens(text));
-    	for(int i = 0; i < strParagraphs.size(); i++) {
-    		paragraphs.add(new SectionInfo(strParagraphs.get(i), i));
-    	}
-    	
-    	return paragraphs;
     }
 
 }
