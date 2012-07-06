@@ -30,4 +30,9 @@ public class NamedEntityFeature extends LuceneFeature {
 		return numNamedEntities;
 	}
 
+	@Override
+	public double getMultiplier() {
+		return SummarizerUtils.namedEntityMultiplier;
+	}
+
 }

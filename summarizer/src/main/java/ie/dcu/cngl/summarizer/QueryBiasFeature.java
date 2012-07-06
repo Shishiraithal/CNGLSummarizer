@@ -14,14 +14,9 @@ public class QueryBiasFeature extends Feature {
 		super(structure);
 		this.query = query;
 	}
-
+	
 	@Override
-	public Double[] getWeights() {
-		Double [] weights = new Double[structure.getNumSentences()];
-		for(int i = 0; i < weights.length; i++) {
-			weights[i] = 0.0;
-		}
-
+	public Double[] calculateRawWeights(Double[] weights) {
 		final double numQueryTerms = numberOfTerms(query);
 		for(int i = 0; i < structure.getNumSentences(); i++) {
 			double numOccurences = 0;
@@ -30,9 +25,12 @@ public class QueryBiasFeature extends Feature {
 			}
 			weights[i] = Math.pow(numOccurences, 2)/numQueryTerms;
 		}
-
-		normalise(weights);
 		return weights;
+	}
+
+	@Override
+	public double getMultiplier() {
+		return SummarizerUtils.queryBiasMultiplier;
 	}
 
 }

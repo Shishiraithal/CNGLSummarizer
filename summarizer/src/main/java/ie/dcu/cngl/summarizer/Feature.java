@@ -20,7 +20,20 @@ public abstract class Feature {
 		this.analyzer = new SummaryAnalyzer();
 	}
 	
-	public abstract Double[] getWeights();
+	public abstract double getMultiplier();
+	
+	public abstract Double[] calculateRawWeights(Double[] weights);
+	
+	public Double[] getWeights() {
+		Double [] weights = new Double[structure.getNumSentences()];
+		for(int i = 0; i < weights.length; i++) {
+			weights[i] = 0.0;
+		}
+		weights = calculateRawWeights(weights);
+		normalise(weights);
+		applyMultiplier(weights);
+		return weights;
+	}
 	
 	protected int getNumOccurences(String str, String longerStr) {
 		int len = str.length();
@@ -50,12 +63,19 @@ public abstract class Feature {
 		return numTerms;
 	}
 	
-	protected void normalise(Double[] weights) {
+	private void normalise(Double[] weights) {
 		double max = getMax(weights);
 		if(max != 0) {
 			for(int i = 0; i < weights.length; i++) {
 				weights[i]/=max;
 			}
+		}
+	}
+	
+	private void applyMultiplier(Double[] weights) {
+		final double multiplier = getMultiplier();
+		for(int i = 0; i < weights.length; i++) {
+			weights[i]*=multiplier;
 		}
 	}
 

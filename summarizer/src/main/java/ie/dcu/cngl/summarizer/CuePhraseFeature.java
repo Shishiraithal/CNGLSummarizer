@@ -38,21 +38,19 @@ public class CuePhraseFeature extends Feature {
 	}
 
 	@Override
-	public Double[] getWeights() {
-		Double [] weights = new Double[structure.getNumSentences()];
-		for(int i = 0; i < weights.length; i++) {
-			weights[i] = 0.0;
-		}
-
+	public Double[] calculateRawWeights(Double[] weights) {
 		for(int i = 0; i < structure.getNumSentences(); i++) {
 			for(int j = 0; j < cuePhrases.size(); j++) {
 				SentenceScore cuePhrase = cuePhrases.get(j);
 				weights[i]+=(getNumOccurences(cuePhrase.getSentence().toLowerCase(), structure.getSentences().get(i).getValue().toLowerCase())*cuePhrase.getScore());
 			}
 		}
-		
-		normalise(weights);
 		return weights;
+	}
+	
+	@Override
+	public double getMultiplier() {
+		return SummarizerUtils.cuePhraseMultiplier;
 	}
 
 }

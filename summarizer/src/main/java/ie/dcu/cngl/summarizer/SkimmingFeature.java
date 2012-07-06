@@ -44,4 +44,9 @@ public class SkimmingFeature extends LuceneFeature {
 		return 1.0F;
 	}
 
+	@Override
+	public double getMultiplier() {
+		return SummarizerUtils.skimmingMultiplier;
+	}
+
 }

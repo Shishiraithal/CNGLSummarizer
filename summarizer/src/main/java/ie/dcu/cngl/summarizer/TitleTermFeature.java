@@ -16,12 +16,7 @@ public class TitleTermFeature extends Feature {
 	}
 
 	@Override
-	public Double [] getWeights() {
-		Double [] weights = new Double[structure.getNumSentences()];
-		for(int i = 0; i < weights.length; i++) {
-			weights[i] = 0.0;
-		}
-
+	public Double[] calculateRawWeights(Double[] weights) {
 		final double numTitleTerms = numberOfTerms(titleTokens);
 		for(int i = 0; i < structure.getNumSentences(); i++) {
 			double numOccurences = 0;
@@ -30,9 +25,12 @@ public class TitleTermFeature extends Feature {
 			}
 			weights[i] = numOccurences/numTitleTerms;
 		}
-
-		normalise(weights);
 		return weights;
+	}
+
+	@Override
+	public double getMultiplier() {
+		return SummarizerUtils.titleTermMultiplier;
 	}
 
 }

@@ -2,4 +2,13 @@
 <config>
 	<stopwords>src/main/resources/stopwords.txt</stopwords>
 	<cuephrases>src/main/resources/test_cue_phrases.txt</cuephrases>
+	<multipliers>
+		<skimming>1.5</skimming>
+		<namedEntity>1</namedEntity>
+		<TSISF>1</TSISF>
+		<titleTerm>1</titleTerm>
+		<cuePhrase>1</cuePhrase>
+		<shortSentence>1</shortSentence>
+		<queryBias>1</queryBias>
+	</multipliers>
 </config>

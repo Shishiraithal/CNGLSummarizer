@@ -53,4 +53,14 @@ public class ShortSentenceFeature extends Feature {
 		return alphaNumericTokens;
 	}
 
+	@Override
+	public double getMultiplier() {
+		return SummarizerUtils.shortSentenceMultiplier;
+	}
+
+	@Override
+	public Double[] calculateRawWeights(Double[] weights) {
+		return weights;
+	}
+
 }

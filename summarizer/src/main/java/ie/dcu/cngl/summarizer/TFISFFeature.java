@@ -14,4 +14,9 @@ public class TFISFFeature extends LuceneFeature {
 		return 1;	//All will be treated the same
 	}
 
+	@Override
+	public double getMultiplier() {
+		return SummarizerUtils.TFISFMultiplier;
+	}
+
 }

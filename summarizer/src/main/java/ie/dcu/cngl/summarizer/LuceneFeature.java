@@ -59,21 +59,17 @@ public abstract class LuceneFeature extends Feature {
 		}
 		this.topTermCutoff = topTermCutoff;
 	}
-
+	
 	@Override
-	public Double [] getWeights() {
-		Double[] weights = null;
-		
+	public Double[] calculateRawWeights(Double[] weights) {
 		try {
 			buildIndex();
 			Query topTermQuery = computeTopTermQuery();
 			weights = searchIndex(topTermQuery);
-			normalise(weights);
 		} catch (Exception e) {
 			System.err.println("Lucene stuff failed");
 			e.printStackTrace();
 		}
-		
 		return weights;
 	}
 	
