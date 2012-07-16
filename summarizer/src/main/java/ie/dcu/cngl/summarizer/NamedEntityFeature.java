@@ -1,14 +1,13 @@
 package ie.dcu.cngl.summarizer;
 
-import ie.dcu.cngl.tokenizer.PageStructure;
 import ie.dcu.cngl.tokenizer.TokenInfo;
 import java.io.IOException;
 import java.util.ArrayList;
 
 public class NamedEntityFeature extends LuceneFeature {
 
-	public NamedEntityFeature(PageStructure structure) throws IOException {
-		super(structure);
+	public NamedEntityFeature() throws IOException {
+		super();
 	}
 
 	@Override

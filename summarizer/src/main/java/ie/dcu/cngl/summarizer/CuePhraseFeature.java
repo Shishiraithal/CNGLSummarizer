@@ -1,6 +1,5 @@
 package ie.dcu.cngl.summarizer;
 
-import ie.dcu.cngl.tokenizer.PageStructure;
 import ie.dcu.cngl.tokenizer.TokenizerUtils;
 
 import java.io.BufferedReader;
@@ -15,8 +14,7 @@ public class CuePhraseFeature extends Feature {
 	
 	private ArrayList<SentenceScore> cuePhrases;
 
-	public CuePhraseFeature(PageStructure structure) throws IOException {
-		super(structure);
+	public CuePhraseFeature() throws IOException {
 		cuePhrases = new ArrayList<SentenceScore>();
 		try {
             File file = new File(SummarizerUtils.cuePhrasesFile);

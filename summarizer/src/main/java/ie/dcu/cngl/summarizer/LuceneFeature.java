@@ -1,8 +1,8 @@
 package ie.dcu.cngl.summarizer;
 
-import ie.dcu.cngl.tokenizer.PageStructure;
 import ie.dcu.cngl.tokenizer.SectionInfo;
 
+import ie.dcu.cngl.tokenizer.PageStructure;
 import ie.dcu.cngl.tokenizer.TokenInfo;
 import ie.dcu.cngl.tokenizer.TokenizerUtils;
 
@@ -41,13 +41,8 @@ public abstract class LuceneFeature extends Feature {
 	
 	private float topTermCutoff;
 
-	public LuceneFeature(PageStructure structure) throws IOException {
-		super(structure);
+	public LuceneFeature() throws IOException {
 		this.ramdir = new RAMDirectory();
-		this.sentenceMap = new HashMap<Integer, SectionInfo>();
-		for(SectionInfo sentence : structure.getSentences()) {
-			sentenceMap.put(sentence.hashCode(), sentence);
-		}
 	}
 	
 	protected abstract float computeDeboost(int paragraphNumber, int sentenceNumber);
@@ -65,7 +60,7 @@ public abstract class LuceneFeature extends Feature {
 		try {
 			buildIndex();
 			Query topTermQuery = computeTopTermQuery();
-			weights = searchIndex(topTermQuery);
+			weights = searchIndex(topTermQuery, weights);
 		} catch (Exception e) {
 			System.err.println("Lucene stuff failed");
 			e.printStackTrace();
@@ -152,11 +147,7 @@ public abstract class LuceneFeature extends Feature {
 		return query;
 	}
 	
-	protected Double[] searchIndex(Query query) throws Exception {
-		Double [] weights = new Double[structure.getNumSentences()];
-		for(int i = 0; i < weights.length; i++) {
-			weights[i] = 0.0;
-		}
+	protected Double[] searchIndex(Query query, Double[] weights) throws Exception {
 		IndexReader reader = IndexReader.open(ramdir);
 		IndexSearcher searcher = new IndexSearcher(reader);
 		
@@ -170,6 +161,15 @@ public abstract class LuceneFeature extends Feature {
 		
 		searcher.close();
 		return weights;
+	}
+	
+	@Override
+	public void setStructure(PageStructure structure) {
+		this.structure = structure;
+		this.sentenceMap = new HashMap<Integer, SectionInfo>();
+		for(SectionInfo sentence : structure.getSentences()) {
+			sentenceMap.put(sentence.hashCode(), sentence);
+		}
 	}
 	
 }

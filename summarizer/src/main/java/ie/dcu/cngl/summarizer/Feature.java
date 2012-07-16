@@ -15,9 +15,12 @@ public abstract class Feature {
 	protected SummaryAnalyzer analyzer;
 	protected PageStructure structure;
 	
-	public Feature(PageStructure structure) throws IOException {
-		this.structure = structure;
+	public Feature() throws IOException {
 		this.analyzer = new SummaryAnalyzer();
+	}
+	
+	public void setStructure(PageStructure structure) {
+		this.structure = structure;
 	}
 	
 	public abstract double getMultiplier();
@@ -36,7 +39,7 @@ public abstract class Feature {
 	}
 	
 	protected int getNumOccurences(String str, String longerStr) {
-		int len = str.length();
+		final int len = str.length();
 		int numOccurences = 0;
 		if (len > 0) {  
 			int start = longerStr.indexOf(str);

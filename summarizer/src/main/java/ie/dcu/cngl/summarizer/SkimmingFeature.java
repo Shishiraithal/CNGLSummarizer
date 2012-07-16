@@ -1,19 +1,18 @@
 package ie.dcu.cngl.summarizer;
 
-import ie.dcu.cngl.tokenizer.PageStructure;
 import java.io.IOException;
 
 public class SkimmingFeature extends LuceneFeature {
 	
+	public SkimmingFeature() throws IOException {
+		super();
+	}
+
 	// these two values are used to implement a simple linear deboost. If 
 	// a different algorithm is desired, these variables are likely to be
 	// no longer required.
 	private float sentenceDeboost;
 	private float sentenceDeboostBase = 0.5F;
-
-	public SkimmingFeature(PageStructure structure) throws IOException {
-		super(structure);
-	}
 
 	public void setSentenceDeboost(float sentenceDeboost) {
 		if (sentenceDeboost < 0.0F || sentenceDeboost > 1.0F) {

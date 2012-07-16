@@ -1,6 +1,5 @@
 package ie.dcu.cngl.summarizer;
 
-import ie.dcu.cngl.tokenizer.PageStructure;
 import ie.dcu.cngl.tokenizer.TokenInfo;
 
 import java.io.IOException;
@@ -10,8 +9,7 @@ public class QueryBiasFeature extends Feature {
 	
 	private ArrayList<TokenInfo> query;
 
-	public QueryBiasFeature(ArrayList<TokenInfo> query, PageStructure structure) throws IOException {
-		super(structure);
+	public QueryBiasFeature(ArrayList<TokenInfo> query) throws IOException {
 		this.query = query;
 	}
 	

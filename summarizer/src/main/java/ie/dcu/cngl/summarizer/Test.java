@@ -12,7 +12,7 @@ public class Test {
 		String text = FileUtils.readFileToString(new File("C:\\Users\\Shane\\Desktop\\long.txt"), "UTF-8");
 		Structurer structurer = new Structurer();
 		Weighter weighter = new Weighter();
-		Aggregator aggregator = new Aggregator();
+		Aggregator aggregator = new Aggregator();		
 		Summarizer summarizer = new Summarizer(structurer, weighter, aggregator);
 		summarizer.setNumSentences(3);
 		String summary = summarizer.summarize(text);

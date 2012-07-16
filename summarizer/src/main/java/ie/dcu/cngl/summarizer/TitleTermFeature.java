@@ -1,6 +1,5 @@
 package ie.dcu.cngl.summarizer;
 
-import ie.dcu.cngl.tokenizer.PageStructure;
 import ie.dcu.cngl.tokenizer.TokenInfo;
 
 import java.io.IOException;
@@ -10,8 +9,7 @@ public class TitleTermFeature extends Feature {
 
 	private ArrayList<TokenInfo> titleTokens;
 
-	public TitleTermFeature(ArrayList<TokenInfo> titleTokens, PageStructure structure) throws IOException {
-		super(structure);
+	public TitleTermFeature(ArrayList<TokenInfo> titleTokens) throws IOException {
 		this.titleTokens = titleTokens;
 	}
 

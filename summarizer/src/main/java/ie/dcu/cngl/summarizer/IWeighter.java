@@ -9,7 +9,7 @@ public interface IWeighter {
 	
 	public ArrayList<Double[]> calculateWeights();
 	
-	public void addFeatures();
+	public void addFeature(Feature feature);
 
 	public void setTitle(ArrayList<TokenInfo> vector);
 

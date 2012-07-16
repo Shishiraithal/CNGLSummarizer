@@ -24,16 +24,23 @@ public class Weighter implements IWeighter {
 		
 		//Executing features
 		for(Feature feature : features) {
-			weights.add(feature.getWeights());
+			if(feature.getMultiplier() != 0) {
+				feature.setStructure(structure);
+				weights.add(feature.getWeights());
+			}
 		}
 		
 		return weights;
 	}
 	
 	@Override
-	public void addFeatures() {
+	public void addFeature(Feature feature) {
+		features.add(feature);
+	}
+	
+	private void addFeatures() {
 		try {
-			SkimmingFeature skimFeat = new SkimmingFeature(structure);
+			SkimmingFeature skimFeat = new SkimmingFeature();
 			skimFeat.setTopTermCutoff(0.3f);
 			features.add(skimFeat);
 		} catch (IOException e) {
@@ -42,14 +49,14 @@ public class Weighter implements IWeighter {
 		}
 		
 		try {
-			features.add(new TFISFFeature(structure));
+			features.add(new TFISFFeature());
 		} catch (IOException e) {
 			System.err.println("TS-ISF feature failed.");
 			e.printStackTrace();
 		}
 		
 		try {
-			features.add(new NamedEntityFeature(structure));
+			features.add(new NamedEntityFeature());
 		} catch (IOException e) {
 			System.err.println("Named entity feature failed.");
 			e.printStackTrace();
@@ -57,7 +64,7 @@ public class Weighter implements IWeighter {
 		
 		if(title != null) {
 			try {
-				features.add(new TitleTermFeature(title, structure));
+				features.add(new TitleTermFeature(title));
 			} catch (IOException e) {
 				System.err.println("Title terms feature failed.");
 				e.printStackTrace();
@@ -65,14 +72,14 @@ public class Weighter implements IWeighter {
 		}
 		
 		try {
-			features.add(new CuePhraseFeature(structure));
+			features.add(new CuePhraseFeature());
 		} catch (IOException e) {
 			System.err.println("Cue phrases feature failed.");
 			e.printStackTrace();
 		}
 		
 		try {
-			features.add(new ShortSentenceFeature(structure));
+			features.add(new ShortSentenceFeature());
 		} catch (IOException e) {
 			System.err.println("Short sentence feature failed.");
 			e.printStackTrace();
@@ -80,11 +87,32 @@ public class Weighter implements IWeighter {
 		
 		if(query != null) {
 			try {
-				features.add(new QueryBiasFeature(query, structure));
+				features.add(new QueryBiasFeature(query));
 			} catch (IOException e) {
 				System.err.println("Query bias feature failed.");
 				e.printStackTrace();
 			}
+		}
+		
+		try {
+			features.add(new GlobalBushyFeature());
+		} catch (Exception e) {
+			System.err.println("Global busy feature failed.");
+			e.printStackTrace();
+		}
+		
+		try {
+			features.add(new PunctuationFeature());
+		} catch (Exception e) {
+			System.err.println("Global bushy feature failed.");
+			e.printStackTrace();
+		}
+		
+		try {
+			features.add(new AffixPresenceFeature());
+		} catch (Exception e) {
+			System.err.println("Affix presence feature failed.");
+			e.printStackTrace();
 		}
 	}
 

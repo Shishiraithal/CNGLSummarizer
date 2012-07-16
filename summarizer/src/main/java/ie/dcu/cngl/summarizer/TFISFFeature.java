@@ -1,12 +1,11 @@
 package ie.dcu.cngl.summarizer;
 
-import ie.dcu.cngl.tokenizer.PageStructure;
 import java.io.IOException;
 
 public class TFISFFeature extends LuceneFeature {
 
-	public TFISFFeature(PageStructure structure) throws IOException {
-		super(structure);
+	public TFISFFeature() throws IOException {
+		super();
 	}
 
 	@Override

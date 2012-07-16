@@ -1,6 +1,5 @@
 package ie.dcu.cngl.summarizer;
 
-import ie.dcu.cngl.tokenizer.PageStructure;
 import ie.dcu.cngl.tokenizer.TokenInfo;
 
 import java.io.IOException;
@@ -17,8 +16,7 @@ public class ShortSentenceFeature extends Feature {
 	
 	private int minimumSentenceTerms;
 
-	public ShortSentenceFeature(PageStructure structure) throws IOException {
-		super(structure);
+	public ShortSentenceFeature() throws IOException {
 		this.minimumSentenceTerms = 5;
 	}
 	
@@ -55,7 +53,7 @@ public class ShortSentenceFeature extends Feature {
 
 	@Override
 	public double getMultiplier() {
-		return SummarizerUtils.shortSentenceMultiplier;
+		return SummarizerUtils.shortSentenceMultiplier != 0 ? 1 : 0;
 	}
 
 	@Override
