@@ -2,6 +2,11 @@ package ie.dcu.cngl.tokenizer;
 
 import org.apache.commons.lang.StringUtils;
 
+/**
+ * Holds derived during tokenization.
+ * @author Johannes Levelling
+ *
+ */
 public class TokenInfo extends UnitInfo {
     private String repl;
     private String poS;

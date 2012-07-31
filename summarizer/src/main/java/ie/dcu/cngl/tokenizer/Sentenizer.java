@@ -5,6 +5,11 @@ import java.util.*;
 
 import org.apache.commons.lang.StringUtils;
 
+/**
+ * Separates the tokenized content into sentences.
+ * @author Johannes Levelling
+ *
+ */
 public class Sentenizer implements ISentenizer {
 	
 	private static Sentenizer instance;
@@ -73,7 +78,11 @@ public class Sentenizer implements ISentenizer {
 	        System.out.println("ERROR: " + e);
 	    }
     }
-    
+
+    /**
+     * Initializing a sentenizer is computationally expensive, so it exists as a singleton.
+     * @return Sentenizer singleton.
+     */
     public static Sentenizer getInstance() {
     	if(instance == null) {
     		synchronized(Sentenizer.class) {
@@ -84,19 +93,23 @@ public class Sentenizer implements ISentenizer {
     	return instance;
     }
 
-    public boolean isBadSentenceStart(String s) {
+    private boolean isBadSentenceStart(String s) {
     	return bss.contains(s);
     }
     
-    public boolean isPossibleSentenceEnd(String s) {
+    private boolean isPossibleSentenceEnd(String s) {
     	return pse.contains(s);
     }
     
-    public boolean isBadSentenceEnd(String s) {
+    private boolean isBadSentenceEnd(String s) {
     	return bse.contains(s);
     }
 
-    public synchronized ArrayList<ArrayList<TokenInfo>> sentenizeTokens(String s) {
+    /**
+     * Tokenize the content, and divide the tokens by sentence.
+     * @return A 2-dimensional array of each sentence and its tokens.
+     */  
+    public synchronized ArrayList<ArrayList<TokenInfo>> sentenize(String s) {
 		ArrayList<TokenInfo> tokens = tokenizer.tokenize(s);
 		if (tokens == null)
 		    return null;

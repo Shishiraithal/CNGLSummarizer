@@ -1,7 +1,13 @@
-package ie.dcu.cngl.summarizer;
+package ie.dcu.cngl.summarizer.feature;
 
 import org.apache.commons.lang.StringUtils;
 
+/**
+ * An affix contains the substring of the actual affix, as
+ * well as the affix type.
+ * @author Shane
+ *
+ */
 public class Affix {
 	
 	public enum AffixType {
@@ -21,7 +27,7 @@ public class Affix {
 		} else if(hyphenAtEnd) {
 			this.type = AffixType.PREFIX;
 		} else {
-			throw new Exception("Incorrect affix format");
+			throw new Exception("Incorrect affix format, \"" + affix + "\" requires appropriate hyphenation.");
 		}
 		this.affix = affix.replace("-", StringUtils.EMPTY);
 	}

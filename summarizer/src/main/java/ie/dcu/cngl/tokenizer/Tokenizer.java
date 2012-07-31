@@ -13,6 +13,10 @@ import org.apache.commons.lang.StringUtils;
 // dehyphenate
 // SGML escpae/unescpae
 
+/**
+ * Breaks content into basic units.
+ * @author Johannes Levelling
+ */
 public class Tokenizer implements ITokenizer {
 	
 	private static Tokenizer instance;
@@ -35,7 +39,11 @@ public class Tokenizer implements ITokenizer {
 		abbrevs = new HashMap<String, ArrayList<ArrayList<String>>>();
 		loadAbbreviations(TokenizerUtils.abbreviations);
     }
-    
+
+    /**
+     * Initializing a tokenizer is computationally expensive, so it exists as a singleton.
+     * @return Tokenizer singleton.
+     */
     public static Tokenizer getInstance() {
     	if(instance == null) {
     		synchronized(Tokenizer.class) {
@@ -224,16 +232,6 @@ public class Tokenizer implements ITokenizer {
     	return tokenize(s, true);
     }
 
-    public ArrayList<String> tokenizeString(String s) {
-		ArrayList<TokenInfo> tis = tokenize(s);
-		ArrayList<String> ts = new ArrayList<String>();
-		for (int i = 0; i < tis.size(); i++) {
-		    TokenInfo ti = (TokenInfo)tis.get(i);
-		    ts.add(ti.getValue());
-		}
-		return ts;
-    }
-
     public static ArrayList<TokenInfo> postTokenize(ArrayList<TokenInfo> tok_vec) {
 		int tok_cnt = tok_vec.size();
 	    int tok_pos = 0;
@@ -300,7 +298,7 @@ public class Tokenizer implements ITokenizer {
     }
     
     // match token list and phrase pattern
-    public static int MWEmatch(ArrayList<TokenInfo> tok_vec, int tok_pos, ArrayList<String> pat, int pat_pos, int mcount) {
+    private static int MWEmatch(ArrayList<TokenInfo> tok_vec, int tok_pos, ArrayList<String> pat, int pat_pos, int mcount) {
         if (pat_pos >= pat.size()) { // reached end of pattern
             return mcount;
         } else if (tok_pos >= tok_vec.size()) { // reached end of token list
@@ -321,7 +319,7 @@ public class Tokenizer implements ITokenizer {
         }
     }
 
-    public static int ACROmatch(ArrayList<TokenInfo> tok_vec, int tok_pos) {
+    private static int ACROmatch(ArrayList<TokenInfo> tok_vec, int tok_pos) {
 		int tok_len = tok_vec.size();
 		int mcount = 1;
 		if (tok_pos+1 >= tok_len)
@@ -368,7 +366,7 @@ public class Tokenizer implements ITokenizer {
 		return mcount;
     }
 
-    public static final boolean isVowel(char ch) {
+    private static final boolean isVowel(char ch) {
 		if (ch=='a' ||
 		    ch=='e' ||
 		    ch=='i' ||
@@ -379,7 +377,7 @@ public class Tokenizer implements ITokenizer {
 		return false;
     }
 
-    public static ArrayList<TokenInfo> deHyphenate(ArrayList<TokenInfo> tok_vec, String s) {
+    private static ArrayList<TokenInfo> deHyphenate(ArrayList<TokenInfo> tok_vec, String s) {
 		int tok_cnt = tok_vec.size();
 	    int tok_pos = 0;
 		TokenInfo ti1 = null;

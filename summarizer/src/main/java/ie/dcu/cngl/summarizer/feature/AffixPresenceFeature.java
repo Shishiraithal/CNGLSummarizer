@@ -1,40 +1,33 @@
-package ie.dcu.cngl.summarizer;
+package ie.dcu.cngl.summarizer.feature;
 
-import ie.dcu.cngl.summarizer.Affix.AffixType;
+import ie.dcu.cngl.summarizer.SummarizerUtils;
+import ie.dcu.cngl.summarizer.feature.Affix.AffixType;
 import ie.dcu.cngl.tokenizer.TokenInfo;
-import ie.dcu.cngl.tokenizer.TokenizerUtils;
-
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.ArrayList;
 
-import org.apache.commons.lang.StringUtils;
-
-public class AffixPresenceFeature extends Feature {
+/**
+ * Calculates the number of supplied affixes that occur in each sentence. </br>
+ * sentence score = number of affixes present/number of terms
+ * @author Shane
+ *
+ */
+public class AffixPresenceFeature extends TermCheckingFeature {
 
 	private ArrayList<Affix> affixes;
 	private int extraLettersForMatch;		//Extra letters at either end of affix necessary for match
 
-	public AffixPresenceFeature() throws IOException {
-		this.extraLettersForMatch = 3;		//Default
+	/**
+	 * Constructs an AffixPresenceFeature with a default of 3
+	 * extra letters needed for a match.
+	 * @throws Exception
+	 */
+	public AffixPresenceFeature() throws Exception {
+		this.extraLettersForMatch = SummarizerUtils.extraLettersForMatch == -1 ? 3 : SummarizerUtils.extraLettersForMatch;		//Default
 		this.affixes = new ArrayList<Affix>();
-		String line = null;
-		try {
-			File file = new File(SummarizerUtils.affixesFile);
-			BufferedReader reader = new BufferedReader(new FileReader(file));
-			while((line = reader.readLine()) != null) {
-				if (!(line.equals(StringUtils.EMPTY) || line.startsWith(TokenizerUtils.COMMENT))) {
-					line = line.toLowerCase();
-					Affix affix = new Affix(line);
-					affixes.add(affix);
-				}
-			}
-			reader.close();
-		} catch (Exception e) {
-			System.out.println("ERROR: exception " + e + "\n" + line);
-			return;
+		for(String line : terms) {
+			line = line.toLowerCase();
+			Affix affix = new Affix(line);
+			affixes.add(affix);
 		}
 	}
 
@@ -43,6 +36,11 @@ public class AffixPresenceFeature extends Feature {
 		return SummarizerUtils.affixPresenceMultiplier;
 	}
 	
+	/**
+	 * Sets the number of letters necessary at the appropriate ends of an affix to
+	 * count as a match.
+	 * @param extraLettersForMatch
+	 */
 	public void setExtraLettersForMatch(int extraLettersForMatch) {
 		this.extraLettersForMatch = extraLettersForMatch;
 	}
@@ -56,12 +54,13 @@ public class AffixPresenceFeature extends Feature {
 		int sentenceNum = 0;
 		for(ArrayList<ArrayList<TokenInfo>> paragraph : structure.getStructure()) {
 			for(ArrayList<TokenInfo> sentence : paragraph) {
-				for(Affix medicalTerm : affixes) {
-					if(medicalTerm.getAffix().length() > 2) {
-						weights[sentenceNum]+=getNumAffixOccurences(medicalTerm, sentence);
+				double numOccurences = 0, numTerms = numberOfTerms(sentence);
+				for(Affix affix : affixes) {
+					if(affix.getAffix().length() > 2) {
+						numOccurences+=getNumAffixOccurences(affix, sentence);
 					}
 				}
-				sentenceNum++;
+				weights[sentenceNum++] = numOccurences/numTerms;
 			}
 		}
 		return weights;
@@ -99,6 +98,11 @@ public class AffixPresenceFeature extends Feature {
 		}
 
 		return numOccurences;
+	}
+
+	@Override
+	public String getTermsFileName() {
+		return SummarizerUtils.affixesFile;
 	}
 
 }

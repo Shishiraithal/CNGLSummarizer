@@ -1,4 +1,4 @@
-package ie.dcu.cngl.summarizer;
+package ie.dcu.cngl.summarizer.feature;
 
 import ie.dcu.cngl.tokenizer.TokenInfo;
 
@@ -9,12 +9,21 @@ import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.apache.lucene.analysis.tokenattributes.OffsetAttribute;
 
+/**
+ * MyTokenStream allows use of our own customized tokenizer
+ * @author Shane
+ *
+ */
 public class MyTokenStream extends TokenStream {
-    CharTermAttribute charTermAtt;
-    OffsetAttribute offsetAtt;
+    
+	private CharTermAttribute charTermAtt;
+    private OffsetAttribute offsetAtt;
+    private final Iterator<TokenInfo> listOfTokens;
 
-    final Iterator<TokenInfo> listOfTokens;
-
+    /**
+     * Initializes tokenstream with an iterator over our own tokens
+     * @param tokenList our own pretokenized tokens
+     */
     MyTokenStream(Iterator<TokenInfo> tokenList) {
         listOfTokens = tokenList;
         charTermAtt = addAttribute(CharTermAttribute.class);
@@ -34,4 +43,5 @@ public class MyTokenStream extends TokenStream {
         }
         return false;
     }
+    
 }

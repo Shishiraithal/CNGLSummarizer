@@ -4,10 +4,22 @@ import ie.dcu.cngl.tokenizer.SectionInfo;
 
 import java.util.ArrayList;
 
+/**
+ * Combines scores from 2 dimensional array into one and ranks sentences accordingly.
+ * Simple linear addition is used. Any sentences receiving individual negative
+ * scores are discounted completely.
+ * @author Shane
+ *
+ */
 public class Aggregator implements IAggregator {
 	
 	private ArrayList<SectionInfo> sentences; 
 
+	/**
+	 * Combines provided weights.
+	 * @param allWeights 2-dimensional array of all weights computed for each sentence
+	 * @return Array of sentences with their ranking.
+	 */
 	public SentenceScore[] aggregate(ArrayList<Double[]> allWeights) {
 		final int numSentences = sentences.size();
 		double[] totalWeights = new double[numSentences];
@@ -17,8 +29,6 @@ public class Aggregator implements IAggregator {
 		//Calculating all weights
 		for(Double[] featureWeights : allWeights) {
 			for(int i = 0; i < featureWeights.length; i++) {
-				//If the feature weight is positive and the sentence
-				//has not being noted as bad by another feature
 				if(featureWeights[i] >= 0 && !flaggedAsBad[i]) {
 					totalWeights[i]+=featureWeights[i];
 				} else {
@@ -68,6 +78,10 @@ public class Aggregator implements IAggregator {
 		return maxIndex;
 	}
 
+	/**
+	 * Sets sentences to be ranked.
+	 * @param sentences Array of sentences being considered for summarization
+	 */
 	@Override
 	public void setSentences(ArrayList<SectionInfo> sentences) {
 		this.sentences = sentences;

@@ -1,5 +1,8 @@
 package ie.dcu.cngl.tokenizer;
 
+/**
+ * Holds content value and location.
+ */
 public class SectionInfo extends UnitInfo {
 	
 	private int location;

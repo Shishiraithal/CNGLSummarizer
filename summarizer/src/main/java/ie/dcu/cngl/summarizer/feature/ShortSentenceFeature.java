@@ -1,5 +1,6 @@
-package ie.dcu.cngl.summarizer;
+package ie.dcu.cngl.summarizer.feature;
 
+import ie.dcu.cngl.summarizer.SummarizerUtils;
 import ie.dcu.cngl.tokenizer.TokenInfo;
 
 import java.io.IOException;
@@ -8,7 +9,7 @@ import java.util.ArrayList;
 import org.apache.commons.lang.StringUtils;
 
 /**
- * Filters sentences with too few terms
+ * Scores sentences with too few terms negatively.
  * @author Shane
  *
  */
@@ -16,10 +17,20 @@ public class ShortSentenceFeature extends Feature {
 	
 	private int minimumSentenceTerms;
 
+	/**
+	 * Creates short sentence feature with default minimum sentence
+	 * length of 5.
+	 * @throws IOException
+	 */
 	public ShortSentenceFeature() throws IOException {
-		this.minimumSentenceTerms = 5;
+		this.minimumSentenceTerms = SummarizerUtils.minSentenceLength == -1 ? 5 : SummarizerUtils.minSentenceLength;
 	}
 	
+	/**
+	 * Sets the minimum number of sentence terms. If the number of terms 
+	 * in a sentence is below this figure it is weighted negatively.
+	 * @param minimum The minimum number of terms.
+	 */
 	public void setMinimumSentenceTerms(int minimum) {
 		this.minimumSentenceTerms = minimum;
 	}

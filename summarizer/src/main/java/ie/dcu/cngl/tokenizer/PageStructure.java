@@ -3,6 +3,12 @@ package ie.dcu.cngl.tokenizer;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+/**
+ * Encapsulates the 3-dimensional structure of a page. The content's
+ * paragraphs, the paragraphs' sentences, the sentences' tokens.
+ * @author Shane
+ *
+ */
 public class PageStructure {
 	
 	private ArrayList<ArrayList<ArrayList<TokenInfo>>> structure;
@@ -60,6 +66,12 @@ public class PageStructure {
 		return getSectionInfo(paragraphsHolder);
 	}
 	
+	/**
+	 * Gets the tokens of the specified tokens in the specified paragraph.
+	 * @param sentenceNumber The sentence number of the desired tokens.
+	 * @param paragraphNumber The paragraph number containing the desired sentence.
+	 * @return The tokens of the desired sentence, or null if it doesn't exist.
+	 */
 	public ArrayList<TokenInfo> getSentenceFromParagraphTokens(int sentenceNumber, int paragraphNumber) {
 		try {
 			return structure.get(paragraphNumber).get(sentenceNumber);
@@ -68,26 +80,49 @@ public class PageStructure {
 		}
 	}
 	
+	/**
+	 * Retrieve the tokens of the specified sentence.
+	 * @param sentenceNumber The absolute sentence number of the desired sentence.
+	 * @return
+	 */
 	public ArrayList<TokenInfo> getSentenceTokens(int sentenceNumber) {
 		return getSentenceFromParagraphTokens(sentenceNumber-sentenceToRelativePosition.get(sentenceNumber), sentenceToParagraph.get(sentenceNumber));
 	}
 	
+	/**
+	 * Get the raw 3-demensional page structure.
+	 * @return The 3-dimensional page structure.
+	 */
 	public ArrayList<ArrayList<ArrayList<TokenInfo>>> getStructure() {
 		return this.structure;
 	}
 	
+	/**
+	 * Get the content sentences.
+	 * @return An array of the content sentences with their absolute positions.
+	 */
 	public ArrayList<SectionInfo> getSentences() {
 		return this.sentences;
 	}
 	
+	/**
+	 * Get the content paragraphs.
+	 * @return An array of the content paragraphs with their absolute positions.
+	 */
 	public ArrayList<SectionInfo> getParagraphs(){
 		return this.paragraphs;
 	}
 	
+	/**
+	 * @return The number of sentences in the content.
+	 */
 	public int getNumSentences() {
 		return this.sentences.size();
 	}
-	
+
+	/**
+	 * @return The number of paragraphs in the content.
+	 */
 	public int getNumParagraphs() {
 		return this.paragraphs.size();
 	}

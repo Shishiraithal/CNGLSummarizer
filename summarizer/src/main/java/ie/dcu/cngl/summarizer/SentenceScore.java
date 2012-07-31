@@ -1,5 +1,10 @@
 package ie.dcu.cngl.summarizer;
 
+/**
+ * Simple tuple containing sentence and its score.
+ * @author Shane
+ *
+ */
 public class SentenceScore implements Comparable<SentenceScore> {
 	
 	private String sentence;

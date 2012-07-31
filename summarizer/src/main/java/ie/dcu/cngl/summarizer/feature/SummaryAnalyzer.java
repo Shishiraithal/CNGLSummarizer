@@ -1,5 +1,6 @@
-package ie.dcu.cngl.summarizer;
+package ie.dcu.cngl.summarizer.feature;
 
+import ie.dcu.cngl.summarizer.SummarizerUtils;
 import ie.dcu.cngl.tokenizer.TokenInfo;
 import ie.dcu.cngl.tokenizer.Tokenizer;
 
@@ -26,7 +27,6 @@ import org.apache.lucene.util.Version;
  * LowercaseFilter and StandardFilter to wrap a StandardTokenizer. The StopFilter
  * uses a custom stop word set.
  * @author Sujit Pal
- * @version $Revision$
  */
 public class SummaryAnalyzer extends Analyzer {
 

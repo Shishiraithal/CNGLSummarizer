@@ -4,8 +4,12 @@ import java.util.*;
 
 import org.apache.commons.lang.StringUtils;
 
-
-public class Paragrapher {
+/**
+ * Separates the tokenized content into paragraphs. A paragraph is marked by a double newline.
+ * @author Shane
+ *
+ */
+public class Paragrapher implements IParagrapher {
 	
 	private static Paragrapher instance;
     private Tokenizer tokenizer;
@@ -14,6 +18,10 @@ public class Paragrapher {
 		this.tokenizer = tokenizer;
     }
 
+    /**
+     * Initializing a paragrapher is computationally expensive, so it exists as a singleton.
+     * @return Paragrapher singleton.
+     */
     public static Paragrapher getInstance() {
     	if(instance == null) {
     		synchronized(Paragrapher.class) {
@@ -24,7 +32,11 @@ public class Paragrapher {
     	return instance;
     }
 
-    public synchronized ArrayList<ArrayList<TokenInfo>> paragraphTokens(String s) {
+    /**
+     * Tokenize the content, and divide the tokens by paragraph.
+     * @return A 2-dimensional array of each paragraph and its tokens.
+     */
+    public synchronized ArrayList<ArrayList<TokenInfo>> paragraph(String s) {
 		ArrayList<TokenInfo> tok_vec = tokenizer.tokenize(s);
 		if (tok_vec == null)
 		    return null;

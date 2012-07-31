@@ -6,6 +6,11 @@ import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.lang.StringUtils;
 
+/**
+ * Static class containing shared variables and methods.
+ * @author Shane
+ *
+ */
 public class TokenizerUtils {
 	
 	public static final String COMMENT = "#";
@@ -17,7 +22,7 @@ public class TokenizerUtils {
 	
 	static {
 		try {
-			XMLConfiguration config = new XMLConfiguration("src/main/resources/tokeniser.xml");
+			XMLConfiguration config = new XMLConfiguration("src/main/resources/config/tokeniser.xml");
 			abbreviations = config.getString("word.abbreviations");
 			badSentenceStart = config.getString("sentence.badStart");
 			possibleSentenceEnd = config.getString("sentence.possibleEnd");
@@ -26,7 +31,7 @@ public class TokenizerUtils {
 	}
 	
 	/**
-	 * Recombines array of tokens into string form. Does this based on location information
+	 * Recombines 2d array of tokens into a String array. Does this based on location information
 	 * derived during tokenization.
 	 * @param sections
 	 * @return
@@ -38,7 +43,13 @@ public class TokenizerUtils {
 		}		
 		return strSections;
 	}
-	
+
+	/**
+	 * Recombines array of tokens into string form. Does this based on location information
+	 * derived during tokenization.
+	 * @param sections
+	 * @return
+	 */
 	public static String recombineTokens1d(ArrayList<TokenInfo> tokens) {
 		String combined;
 		TokenInfo current, next;

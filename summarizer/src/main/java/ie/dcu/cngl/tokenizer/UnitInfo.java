@@ -1,5 +1,10 @@
 package ie.dcu.cngl.tokenizer;
 
+/**
+ * Basic unit info.
+ * @author Shane
+ *
+ */
 public class UnitInfo {
 	
     protected String value;
